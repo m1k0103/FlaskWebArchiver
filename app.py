@@ -38,6 +38,10 @@ def archive():
 def loading():
     return render_template("loading.html")
 
+@app.route("/debug")
+def test():
+    return render_template("test.html")
+
 def databaseInteract(action):
     # There is going to be 4 different actions. Append, read, write, delete.
     pass
