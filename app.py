@@ -16,7 +16,7 @@ def login():
 
 @app.route("/forgotpassword")
 def forgot_pass():
-    return render_template("forgotpass.html")
+    return render_template("forgotpassword.html")
 
 @app.route("/dashboard")
 def dashboard():
@@ -37,6 +37,11 @@ def archive():
 @app.route("/loading")
 def loading():
     return render_template("loading.html")
+
+def databaseInteract(action):
+    # There is going to be 4 different actions. Append, read, write, delete.
+    pass
+
 
 if __name__ == "__main__":
     app.run()
