@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template
+import sqlite3, os
 
 app = Flask(__name__)
 
@@ -42,10 +43,11 @@ def loading():
 def test():
     return render_template("test.html")
 
-def databaseInteract(action):
-    # There is going to be 4 different actions. Append, read, write, delete.
+def userDataInteract():
     pass
 
+def websiteDataInteract():
+    pass
 
 if __name__ == "__main__":
     app.run()
