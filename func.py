@@ -6,7 +6,11 @@ def get_links(url):
     soup = BeautifulSoup(requests.get(url=url).text)
     print(soup)
 
+def hash():
+    pass
 
+def userDataInteract():
+    pass
 
-url = "https://google.com"
-l = get_links(url)
+def websiteDataInteract():
+    pass
