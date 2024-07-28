@@ -1,6 +1,12 @@
 import sqlite3
 import os
 
+# ----- TO DO -----
+#   > maybe make a config file to store the database names, admin password for the website, etc 
+#     (this could be done in docker maybe??)
+#   > research if previous idea is possible
+#   > work on the theory too
+
 USER_DB_NAME = "user.db"
 WEBSITE_DB_NAME = "website_data.db"
 
@@ -24,4 +30,3 @@ if USER_DB_NAME not in os.listdir():
 else:
     print("[!] user database already exists\n[!] exiting program...")
     quit()
-
