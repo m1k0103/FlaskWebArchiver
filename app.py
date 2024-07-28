@@ -43,11 +43,5 @@ def loading():
 def test():
     return render_template("test.html")
 
-def userDataInteract():
-    pass
-
-def websiteDataInteract():
-    pass
-
 if __name__ == "__main__":
     app.run()
