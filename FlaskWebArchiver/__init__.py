@@ -7,9 +7,6 @@ from flask import Flask
 #   > research if previous idea is possible
 #   > work on the theory too
 
-
-
-
 def start():
     USER_DB_NAME = "user.db"
     WEBSITE_DB_NAME = "website_data.db"

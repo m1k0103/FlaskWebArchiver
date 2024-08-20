@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 import sqlite3, os
+from markupsafe import escape
 
 app = Flask(__name__)
 
@@ -19,7 +20,7 @@ def login():
 def forgot_pass():
     return render_template("forgotpassword.html")
 
-@app.route("/dashboard")
+@app.route("/user/<string:username>")
 def dashboard():
     return render_template("dashboard.html")
 
