@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename= 'base/base.css') }}">
+        <title>{% block title %} {% endblock%}</title>
+    </head>
+    <body>
+        <div class="header">
+            <ul>
+                <li class="navbar"><a class="navbar_text" href="{{ url_for('homepage') }}">Home</a></li>
+                <li class="navbar"><a class="navbar_text" href="{{ url_for('login') }}">Login</a></li>
+                <li class="navbar"><a class="navbar_text" href="{{ url_for('signup') }}">Sign Up</a></li>
+                <li class="navbar"><a class="navbar_text" href="{{ url_for('search') }}">Search</a></li>
+            </ul>
+        </div>
+        <br>
+        <div>
+           {% block content %} {% endblock %}
+        </div>
+    </body>
+</html>
