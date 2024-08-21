@@ -1,6 +1,7 @@
-from flask import Flask, request, render_template
-import sqlite3, os
+from flask import Flask, request, render_template, jsonify, redirect
+import os, sqlite3
 from markupsafe import escape
+from FlaskWebArchiver.func import checkDetails, cookieGen
 
 app = Flask(__name__)
 
@@ -14,7 +15,13 @@ def signup():
 
 @app.route("/login",methods=["GET", "POST"])
 def login():
-    return render_template("login.html")
+    if request.method == "POST":
+        contents = request.form['content']
+        if checkDetails(username,password) == True:
+            cookie = cookieGen(username,password)
+            return redirect("dashboard",session=cookie)
+    else:
+        return render_template("login.html")
 
 @app.route("/forgotpassword")
 def forgot_pass():
