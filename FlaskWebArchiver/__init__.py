@@ -32,5 +32,5 @@ def start():
         print("[!] user database already exists\n[!] exiting program...")
         
         print("[!] starting program")
-        app = Flask(__name__)
+        from app import app
         app.run(host="0.0.0.0", port="8080") # something doesnt work...
