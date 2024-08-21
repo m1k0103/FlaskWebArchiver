@@ -31,5 +31,5 @@ def start():
         print("[!] user database already exists\n[!] exiting program...")
         
         print("[!] starting program")
-        from FlaskWebArchiver.main import app
-        app.run(host="0.0.0.0", port="8080")
+        from FlaskWebArchiver.routes import app
+        app.run(host="0.0.0.0", port="5000")
