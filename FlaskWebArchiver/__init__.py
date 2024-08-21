@@ -1,6 +1,5 @@
 import sqlite3
 import os
-from flask import Flask
 # ----- TO DO -----
 #   > maybe make a config file to store the database names, admin password for the website, etc 
 #     (this could be done in docker maybe??)
@@ -32,5 +31,5 @@ def start():
         print("[!] user database already exists\n[!] exiting program...")
         
         print("[!] starting program")
-        from app import app
-        app.run(host="0.0.0.0", port="8080") # something doesnt work...
+        from FlaskWebArchiver.main import app
+        app.run(host="0.0.0.0", port="8080")
