@@ -1,6 +1,7 @@
 body {
     background-color: gray;
     color: white;
+    margin: 0;
 }
 li.navbar {
     float: right;
@@ -10,10 +11,8 @@ li.navbar {
     border: 2px rgb(255, 255, 255) solid;
 }
 a.navbar_text{
-    color: rgb(255, 255, 255);
     padding: 5px;
 }
 .title {
     text-align: center;
-    color: white;
 }

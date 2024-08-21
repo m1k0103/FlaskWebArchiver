@@ -4,11 +4,11 @@
 {% block content %}
     <h1 class="title">Login</h1>
     <div>
-        <form action="login.html">
+        <form action="login.html" method="post">
             <label for="username">Username:</label><br>
-            <input id="username" type="text">
+            <input id="username" name="username" type="text">
             <label for="password">Password:</label><br>
-            <input id="password" type="password">
+            <input id="password" name="password" type="password">
             <input type="submit" value="Submit">
         </form>
     </div>
