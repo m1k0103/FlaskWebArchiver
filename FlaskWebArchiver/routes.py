@@ -16,10 +16,12 @@ def signup():
 @app.route("/login",methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        contents = request.form['content']
-        if checkDetails(username,password) == True:
-            cookie = cookieGen(username,password)
-            return redirect("dashboard",session=cookie)
+        username = request.form['username']
+        password = request.form['password']
+        print(username,password)
+        #if checkDetails(username,password) == True:
+        #    cookie = cookieGen(username,password)
+        return redirect("dashboard.html")#,session=cookie)
     else:
         return render_template("login.html")
 
