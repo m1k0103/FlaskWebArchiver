@@ -18,7 +18,7 @@ def start():
         cursor = c.cursor()
 
         # creates table for user data
-        cursor.execute("CREATE TABLE userdata(username,phash,email,vercode)")
+        cursor.execute("CREATE TABLE userdata(user_id INTEGER PRIMARY KEY,username STRING,phash STRING,email STRING,vercode STRING)")
         c.commit()
         print("[+] table 'ud' created in user table")
         c.close()
