@@ -9,20 +9,24 @@ import os
 def start():
     USER_DB_NAME = "user.db"
     WEBSITE_DB_NAME = "website_data.db"
+    PATH_TO_SAVE = "FlaskWebArchiver/"
 
     if USER_DB_NAME not in os.listdir():
-        os.system(f'echo "" > {USER_DB_NAME}')
+        os.system(f'echo > {USER_DB_NAME}')
         print("[+] user database created")
         c = sqlite3.connect(USER_DB_NAME)
         cursor = c.cursor()
 
         # creates table for user data
-        cursor.execute("CREATE TABLE ud(username,phash,email,vercode)")
-        print("table ud (user data) created in user table")
+        cursor.execute("CREATE TABLE userdata(username,phash,email,vercode)")
+        c.commit()
+        print("[+] table 'ud' created in user table")
         c.close()
+        
         if WEBSITE_DB_NAME not in os.listdir():
-            os.system(f'echo "" > {WEBSITE_DB_NAME}')
+            os.system(f'echo > {WEBSITE_DB_NAME}')
             print("[+] website database created")
+
         else:
             print(["[!] website database already exists"])
             quit()
