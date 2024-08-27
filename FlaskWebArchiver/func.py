@@ -4,6 +4,7 @@ import os
 import sqlite3
 import hashlib
 
+
 def md5hash(input):
     return hashlib.md5(input.encode()).hexdigest()
 
@@ -26,29 +27,34 @@ def checkUserExists(username):
         cursor.close()
         con.close()
 
-
 def checkPassword(username, password):
     phash = md5hash(password)
     con = sqlite3.connect("user.db")
     cursor = con.cursor()
     result = cursor.execute("select * from userdata where username=? and phash=?", (username,phash)).fetchall()
-    if len(result) > 0:
-        return True
-    else:
+    try:
+        if len(result) > 0:
+            return True
+        else:
+            return False
+    finally:
+        cursor.close()
+        con.close()
+
+def makeAccount(username,password,email):
+    if checkUserExists(username=username) == True:
         return False
-        
-
-def signup(username, password,email):
-    phash = md5hash(password)
-    con = sqlite3.connect("user.db")
-    cursor = con.cursor()
-    result = cursor.execute("INSERT INTO userdata (username,phash,email) VALUES (?,?,?)", [username,phash,email])
-    cursor.close()
-    con.commit()
-    con.close()
-    return f"user {username} registered"
+    else:
+        phash = md5hash(password)
+        con = sqlite3.connect("user.db")
+        cursor = con.cursor()
+        cursor.execute("INSERT INTO userdata (username,phash,email) VALUES (?,?,?)", [username,phash,email])
+        con.commit()
+        cursor.close()
+        con.close()
+        return f"user {username} registered"
 
 
-print(signup("admin","secret_password","admin@website.com"))
-print(checkUserExists("admin"))
-print(checkPassword("admin", "secret_password"))
+#print(makeAccount("admin1","secret_password","admin@website.com"))
+#print(checkUserExists("admin1"))
+#print(checkPassword("admin1", "secret_password"))
