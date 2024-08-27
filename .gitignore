@@ -3,3 +3,4 @@
 *.db
 FlaskWebArchiver/__pycache__
 .venv
+FlaskWebArchiver/secret_key.py
