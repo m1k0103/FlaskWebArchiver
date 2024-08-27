@@ -9,7 +9,6 @@ import os
 def start():
     USER_DB_NAME = "user.db"
     WEBSITE_DB_NAME = "website_data.db"
-    PATH_TO_SAVE = "FlaskWebArchiver/"
 
     if USER_DB_NAME not in os.listdir():
         os.system(f'echo > {USER_DB_NAME}')
@@ -32,8 +31,8 @@ def start():
             quit()
 
     else:
-        print("[!] user database already exists\n[!] exiting program...")
+        print("[!] user database already exists\n")
         
-        print("[!] starting program")
-        from FlaskWebArchiver.routes import app
-        app.run(host="0.0.0.0", port="5000",debug=True)
+    print("[!] starting program")
+    from FlaskWebArchiver.routes import app
+    app.run(host="0.0.0.0", port="5000",debug=True)
