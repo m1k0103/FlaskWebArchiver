@@ -1,5 +1,8 @@
 import sqlite3
 import os
+import random
+import string
+
 # ----- TO DO -----
 #   > maybe make a config file to store the database names, admin password for the website, etc 
 #     (this could be done in docker maybe??)
@@ -32,7 +35,14 @@ def start():
 
     else:
         print("[!] user database already exists\n")
-        
+
+    #creates secret_key used for auth
+    if "secret_key.py" not in os.listdir("./FlaskWebArchiver"):
+        with open("./FlaskWebArchiver/secret_key.py", "w") as f:
+            f.write(f"SECRET_KEY = b\"\"\"{''.join(random.choices(string.printable, k=16))}\"\"\"")
+    else:
+        pass
+
     print("[!] starting program")
     from FlaskWebArchiver.routes import app
     app.run(host="0.0.0.0", port="5000",debug=True)
