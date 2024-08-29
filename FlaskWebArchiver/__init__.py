@@ -43,6 +43,9 @@ def start():
     else:
         pass
 
+    # creates folder for website save data
+    os.mkdir("FlaskWebArchiver/website_saves")
+
     print("[!] starting program")
     from FlaskWebArchiver.routes import app
     app.run(host="0.0.0.0", port="5000",debug=True)
