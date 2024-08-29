@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import os
+from urllib.parse import urlsplit
 
 def save_file(name, raw_data):
     try:
