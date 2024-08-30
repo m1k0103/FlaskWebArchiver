@@ -8,7 +8,11 @@
         <div class="header">
             <ul>
                 <li class="navbar"><a class="navbar_text" href="{{ url_for('signup') }}">Sign Up</a></li>
-                <li class="navbar"><a class="navbar_text" href="{{ url_for('login') }}">Login</a></li>
+                {% if session.username %}
+                <li class="navbar"><a class="navbar_text" href="{{ url_for('logout') }}">Log Out</a></li>
+                {% else %}
+                <li class="navbar"><a class="navbar_text" href="{{ url_for('login') }}">Log In </a></li>
+                {% endif %}
                 <li class="navbar"><a class="navbar_text" href="{{ url_for('dashboard') }}">Dashboard</a></li>
                 <li class="navbar"><a class="navbar_text" href="{{ url_for('search') }}">Search</a></li>
                 <li class="navbar"><a class="navbar_text" href="{{ url_for('homepage') }}">Home</a></li>
