@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import os
 import sqlite3
 import hashlib
+import random
 
 
 def md5hash(input):
@@ -54,6 +55,33 @@ def makeAccount(username,password,email):
         con.close()
         return f"user {username} registered"
 
+def create_website_save(url,index_path,timestamp):
+    os.chdir("../../../")
+    con = sqlite3.connect("website_data.db")
+    cursor = con.cursor()
+    
+    #creates website index table
+    table_name = f"table{random.randint(0,100000000)}"
+
+    if len(cursor.execute(f"SELECT name FROM sqlite_master WHERE name='{table_name}'").fetchall()) > 0:
+        print("table already exists. not creating new table. inserting data")
+        cursor.execute(f"INSERT INTO {table_name} (url,index_path,timestamp) VALUES (?,?,?)", [url,index_path,timestamp])
+        con.commit()
+
+    else:
+        print("table doesnt exist. creating new table.")
+        cursor.execute(f"CREATE TABLE {table_name} (id,url STRING, index_path STRING, timestamp STRING, FOREIGN KEY(id) REFERENCES all_sites(url_id))")
+        con.commit()
+        cursor.execute(f"INSERT INTO {table_name} (url,index_path,timestamp) VALUES (?,?,?)", [url,index_path,timestamp])
+        print(f"inserted data into table {table_name}")
+        con.commit()
+    
+    #new connection because why not idk
+
+    cursor.execute(f"INSERT INTO all_sites(url, table_name) VALUES (?,?)", [url, table_name])
+    con.commit()
+    con.close()
+    return True # completed successfully
 
 #print(makeAccount("admin1","secret_password","admin@website.com"))
 #print(checkUserExists("admin1"))
