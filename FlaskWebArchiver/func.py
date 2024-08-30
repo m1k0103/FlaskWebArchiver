@@ -49,7 +49,7 @@ def makeAccount(username,password,email):
         phash = md5hash(password)
         con = sqlite3.connect("user.db")
         cursor = con.cursor()
-        cursor.execute("INSERT INTO userdata (username,phash,email) VALUES (?,?,?)", [username,phash,email])
+        cursor.execute("INSERT INTO userdata (username,phash,email,total_saves,total_searches) VALUES (?,?,?,?,?)", [username,phash,email,0,0])
         con.commit()
         cursor.close()
         con.close()
@@ -83,6 +83,15 @@ def create_website_save(url,index_path,timestamp):
     con.close()
     return True # completed successfully
 
+def get_stats(username):
+    con = sqlite3.connect("user.db")
+    cursor = con.cursor()
+    result = cursor.execute("SELECT total_searches,total_saves FROM userdata WHERE username=?", [username]).fetchall()[0]
+    total_searches = result[0]
+    total_saves = result[1]
+    return total_searches,total_saves
+    
+get_stats("test")
 #print(makeAccount("admin1","secret_password","admin@website.com"))
 #print(checkUserExists("admin1"))
 #print(checkPassword("admin1", "secret_password"))
