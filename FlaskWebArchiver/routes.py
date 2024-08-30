@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, url_for, jsonify, redirect, session
-from FlaskWebArchiver.func import checkPassword, makeAccount
+from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats
 from FlaskWebArchiver.secret_key import SECRET_KEY
 
 app = Flask(__name__)
@@ -60,7 +60,10 @@ def forgot_pass():
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html")
+    if "logged_in" in session and session["logged_in"]:
+        username = session.get("username")
+        stats = get_stats(username)
+    return render_template("dashboard.html", total_searches=stats[0], total_saves=stats[1])
 
 @app.route("/search")
 def search():
