@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import os
 from urllib.parse import urlsplit
+import datetime
+from FlaskWebArchiver.func import create_website_save
 
 def save_file(name, raw_data):
     try:
@@ -9,19 +11,18 @@ def save_file(name, raw_data):
             f.write(raw_data)  
     except:
         print(f"an error occured when saving file called {name}")
-        
-
 
 def scrape(url):
     netloc = urlsplit(url)[1]
     scheme = urlsplit(url)[0]
     query = urlsplit(url)[3].split(".")
+    timestamp = datetime.datetime.now().timestamp()
     print(netloc)
     if netloc not in os.listdir("./FlaskWebArchiver/website_saves"):
-        os.mkdir(f"./FlaskWebArchiver/website_saves/{netloc}")
-        os.chdir(f"./FlaskWebArchiver/website_saves/{netloc}")
+        os.mkdir(f"./FlaskWebArchiver/website_saves/{netloc}_{timestamp}")
+        os.chdir(f"./FlaskWebArchiver/website_saves/{netloc}_{timestamp}")
     else:
-        os.chdir(f"./FlaskWebArchiver/website_saves/{netloc}")
+        os.chdir(f"./FlaskWebArchiver/website_saves/{netloc}_{timestamp}")
     
     #save scrape url as "index.html"
     r = requests.get(url)
@@ -52,4 +53,9 @@ def scrape(url):
     #saves the edited soup to the index.html file which will be located in the same.
     # cant use function save_file() as that one writes raw binary and i need to write html into file blah blah
     with open("index.html", "w") as f:
-            f.write(soup.prettify())  
+            f.write(soup.prettify())
+    
+    indexpath = f"./FlaskWebArchiver/website_saves/{netloc}_{timestamp}/index.html" # this is what will be saved in the database
+
+    create_website_save(url, indexpath, timestamp)
+
