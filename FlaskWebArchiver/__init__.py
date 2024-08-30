@@ -20,21 +20,29 @@ def start():
         cursor = c.cursor()
 
         # creates table for user data
-        cursor.execute("CREATE TABLE userdata(user_id INTEGER PRIMARY KEY,username STRING,phash STRING,email STRING,vercode STRING)")
+        cursor.execute("CREATE TABLE userdata(user_id INTEGER PRIMARY KEY,username STRING NOT NULL,phash STRING NOT NULL,email STRING NOT NULL, total_searches INTEGER, total_saves INTEGER, vercode STRING)")
         c.commit()
-        print("[+] table 'ud' created in user table")
         c.close()
+        print("[+] table 'userdata' created in user table")
         
         if WEBSITE_DB_NAME not in os.listdir():
             os.system(f'echo > {WEBSITE_DB_NAME}')
             print("[+] website database created")
 
+            c = sqlite3.connect(WEBSITE_DB_NAME)
+            cursor = c.cursor()
+
+            #creates table for indexes table
+            cursor.execute("CREATE TABLE all_sites(url_id INTEGER PRIMARY KEY NOT NULL, url STRING, table_name STRING)")
+            c.commit()
+            
         else:
             print(["[!] website database already exists"])
-            quit()
 
     else:
         print("[!] user database already exists\n")
+    
+    
 
     #creates secret_key used for auth
     if "secret_key.py" not in os.listdir("./FlaskWebArchiver"):
