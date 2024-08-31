@@ -91,7 +91,7 @@ def get_stats(username):
     total_saves = result[1]
     return total_searches,total_saves
     
-get_stats("test")
+#get_stats("test")
 #print(makeAccount("admin1","secret_password","admin@website.com"))
 #print(checkUserExists("admin1"))
 #print(checkPassword("admin1", "secret_password"))
