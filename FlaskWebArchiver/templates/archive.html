@@ -1,6 +1,30 @@
 {% extends 'base.html' %}
 
-{% block title %} FA | Archiveing Page {% endblock %}
+{% block title %} FA | Search {% endblock %}
 {% block content %}
-    <h1>Archive here</h1>
+    <h1 class="title"><u>Save Website</u></h1>
+
+
+{% if session.username %}
+    <form action="archive" method="post">
+
+        <label for="archive">Archive a website:</label>
+        <input type="url" name="archive" id="archive">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+{% else %}
+
+    <div>
+        <h4>You have {{ session.free_archives }} left. Please <a href="{{ url_for('signup') }}">sign up</a> to have unlimited archives!</h4>
+    </div>
+    <form action="archive" method="post">
+        <label for="archive">Archive a website:</label>
+        <input type="url" name="archive" id="archive">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+{% endif %}
+
 {% endblock %}
