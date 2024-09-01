@@ -53,9 +53,9 @@ def scrape(url):
     #saves the edited soup to the index.html file which will be located in the same.
     # cant use function save_file() as that one writes raw binary and i need to write html into file blah blah
     with open("index.html", "w") as f:
-            f.write(soup.prettify())
+            f.write(soup.prettify().replace("{#", "{ #"))
     
     indexpath = f"./FlaskWebArchiver/website_saves/{netloc}_{timestamp}/index.html" # this is what will be saved in the database
 
     create_website_save(url, indexpath, timestamp)
-
+    return indexpath
