@@ -2,5 +2,31 @@
 
 {% block title %} FA | Search {% endblock %}
 {% block content %}
-    <h1>Search archives</h1>
+    <h1 class="title"><u>Search archives</u></h1>
+
+
+
+{% if session.username %}
+    <form action="search" method="post">
+
+        <label for="search">Search archives:</label>
+        <input type="text" name="search" id="search">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
+
+{% else %}
+
+    <div>
+        <h4>You have {{ session.free_searches }} left. Please <a href="{{ url_for('signup') }}">sign up</a> to have unlimited searches!</h4>
+    </div>
+    <form action="search" method="post">
+        <label for="search">Search archives:</label>
+        <input type="text" name="search" id="search">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+{% endif %}
+
 {% endblock %}
