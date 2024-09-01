@@ -5,16 +5,14 @@
     <h1 class="title"><u>Search archives</u></h1>
 
 
-
 {% if session.username %}
     <form action="search" method="post">
 
         <label for="search">Search archives:</label>
-        <input type="text" name="search" id="search">
+        <input type="url" name="search" id="search">
         <br>
         <input type="submit" value="Submit">
     </form>
-
 
 {% else %}
 
@@ -23,7 +21,7 @@
     </div>
     <form action="search" method="post">
         <label for="search">Search archives:</label>
-        <input type="text" name="search" id="search">
+        <input type="url" name="search" id="search">
         <br>
         <input type="submit" value="Submit">
     </form>
