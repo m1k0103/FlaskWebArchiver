@@ -2,9 +2,40 @@
 
 {% block title %} Loading... {% endblock %}
 {% block content %}
-    <h1>Loading in progress...</h1>
+    <h1 class="title">Loading in progress...</h1>
 
-    <h4>We are currently saving your website.  carry on here</h4>
+    <h4 style="padding-left: 20px;">We are currently saving your website. <br>You will be redirected to the site when it is saved successfully. <br><br>It it will be accessible from your dashboard!</h4>
 
+<!--Remove this later-->
+The url that you are saving is {{ urltoarchive }}
+
+<!--Hidden div that send request for the actual save-->
+
+<div style="display: none;">
+        <p id="value" onload="send">{{ urltoarchive|safe }}</p>
+        
+</div>
+
+<script>
+window.onload = function(){
+    var val = document.getElementById("value").textContent
+    console.log(val)
+    var xhr = new XMLHttpRequest()
+    xhr.open("POST", "/loading")
+    xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
+    const body = JSON.stringify({
+        url:val
+    })
+    xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+        document.write(xhr.responseText)
+    }
+}
+    xhr.send(body)
+    console.log(body)
+    console.log("sent")
+    
+}
+</script>
 
 {% endblock %}
