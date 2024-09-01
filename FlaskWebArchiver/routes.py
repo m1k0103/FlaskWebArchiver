@@ -58,6 +58,7 @@ def logout():
 def forgot_pass():
     return render_template("forgotpassword.html")
 
+# ----- FINISHED. DO NOT TOUCH PLEASE. -----
 @app.route("/dashboard")
 def dashboard():
     if "logged_in" in session and session["logged_in"]:
@@ -67,9 +68,33 @@ def dashboard():
     else:
         return render_template("dashboard.html")
 
-@app.route("/search")
+# ----- FINISHED. DO NOT TOUCH PLEASE. -----
+@app.route("/search",methods=["GET","POST"])
 def search():
-    return render_template("search.html")
+    if request.method == "POST": # if authed search
+        if "logged_in" in session and session["logged_in"]:
+            url = request.form["search"]
+            return redirect(url_for("loading"), urltosearch=url)
+        else: # if not authed search
+            session["free_searches"] -= 1
+            if session.get("free_searches") <= 0:
+                return render_template("search.html")
+            else:
+                url = request.form["search"]
+                return redirect(url_for("loading"), urltosearch=url)
+
+    elif request.method == "GET":
+        if "logged_in" in session and session["logged_in"]:
+            return render_template("search.html")
+        else:
+            if "free_searches" in session and session["free_searches"]:
+                pass
+            else: 
+                session["free_searches"] = 5
+            return render_template("search.html", free_searches=session["free_searches"])
+
+
+    
 
 @app.route("/timeline")
 def timeline():
@@ -82,7 +107,3 @@ def archive():
 @app.route("/loading")
 def loading():
     return render_template("loading.html")
-
-@app.route("/debug")
-def test():
-    return render_template("test.html")
