@@ -1,6 +1,7 @@
-from flask import Flask, request, render_template, url_for, jsonify, redirect, session
+from flask import Flask, request, render_template, url_for, jsonify, redirect, session, render_template_string
 from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats
 from FlaskWebArchiver.secret_key import SECRET_KEY
+from FlaskWebArchiver.scrape_website import scrape
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -69,41 +70,48 @@ def dashboard():
         return render_template("dashboard.html")
 
 # ----- FINISHED. DO NOT TOUCH PLEASE. -----
-@app.route("/search",methods=["GET","POST"])
-def search():
-    if request.method == "POST": # if authed search
+@app.route("/archive",methods=["GET","POST"])
+def archive(): 
+    if request.method == "POST": # if authed archive
         if "logged_in" in session and session["logged_in"]:
-            url = request.form["search"]
-            return redirect(url_for("loading"), urltosearch=url)
-        else: # if not authed search
-            session["free_searches"] -= 1
-            if session.get("free_searches") <= 0:
-                return render_template("search.html")
+            url = request.form["archive"]
+            return render_template("loading.html", urltoarchive=url)
+        else: # if not authed archive
+            session["free_archives"] -= 1
+            if session.get("free_archives") <= 0:
+                return render_template("archive.html")
             else:
-                url = request.form["search"]
-                return redirect(url_for("loading"), urltosearch=url)
+                url = request.form["archive"]
+                return render_template("loading.html", urltoarchive=url)
 
     elif request.method == "GET":
         if "logged_in" in session and session["logged_in"]:
-            return render_template("search.html")
+            return render_template("archive.html")
         else:
-            if "free_searches" in session and session["free_searches"]:
+            if "free_archives" in session and session["free_archives"]:
                 pass
             else: 
-                session["free_searches"] = 5
-            return render_template("search.html", free_searches=session["free_searches"])
+                session["free_archives"] = 5
+            return render_template("archive.html", free_archives=session["free_archives"])
 
-
-    
 
 @app.route("/timeline")
 def timeline():
     return render_template("timeline.html")
 
-@app.route("/archive")
-def archive():
-    return render_template("archive.html")
+@app.route("/search")
+def search():
+    return render_template("search.html")
 
-@app.route("/loading")
+@app.route("/loading", methods=["GET", "POST"])
 def loading():
-    return render_template("loading.html")
+    if request.method == "GET":
+        return render_template("loading.html")
+    elif request.method == "POST":
+        from_post = request.json["url"]
+        url = scrape(from_post)
+        print(url)
+        with open(url, "r") as f:
+            content = f.read()
+            return render_template_string(content)
+    
