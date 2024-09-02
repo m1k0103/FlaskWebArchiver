@@ -4,7 +4,8 @@ import os
 import sqlite3
 import hashlib
 import random
-
+import datetime
+import time
 
 def md5hash(input):
     return hashlib.md5(input.encode()).hexdigest()
@@ -90,11 +91,21 @@ def get_stats(username):
     total_saves = result[1]
     return total_searches,total_saves
 
-def get_scrapes(url,lowertimestamp, uppertimestamp):
-    
-    pass
+def get_website_from_time(url,date):
+    from_timestamp = time.mktime(datetime.datetime.strptime(date,"%Y-%m-%d").timetuple()) # start of the day
+    to_timestamp = from_timestamp + 1693781999 # 1 second before the day ends
+    con = sqlite3.connect("website_data.db")
+    cursor = con.cursor()
+    result = cursor.execute("SELECT table_name FROM all_sites WHERE url=? AND timestamp >= ? AND timestamp <= ?", [url, from_timestamp, to_timestamp]).fetchall()
+    a = []
+    for table in result:
+        a.append(cursor.execute(f"SELECT url,index_path FROM {table[0]}").fetchall()[0])
+    con.close()
+    return list(a)
 
 #get_stats("test")
 #print(makeAccount("admin1","secret_password","admin@website.com"))
 #print(checkUserExists("admin1"))
 #print(checkPassword("admin1", "secret_password"))
+
+get_website_from_time("https://google.com","2024-09-02")
