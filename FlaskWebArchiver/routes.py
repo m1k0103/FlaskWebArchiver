@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, url_for, jsonify, redirect, session, render_template_string
-from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats
+from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats, get_website_from_time
 from FlaskWebArchiver.secret_key import SECRET_KEY
 from FlaskWebArchiver.scrape_website import scrape
 
@@ -95,14 +95,28 @@ def archive():
             return render_template("archive.html", free_archives=session["free_archives"])
 
 
-@app.route("/timeline")
+@app.route("/timeline",methods=["GET","POST"])
 def timeline():
-    return render_template("timeline.html")
+    if request.method == "GET":
+        return render_template("timeline.html")
+    elif request.method == "POST":
+        from_post = request.json["path_to_render"]
+        with open(from_post, "r") as f:
+            content = f.read()
+            return content
 
-@app.route("/search")
+@app.route("/search",methods=["GET","POST"])
 def search():
-    return render_template("search.html")
+    if request.method == "GET":
+        return render_template("search.html")
+    elif request.method == "POST":
+        url = request.form["url"]
+        date = request.form["date"]
+        website_list = get_website_from_time(url,date)    
+        print(website_list)
+        return render_template("timeline.html", website_list=website_list)
 
+# ----- FINISHED. DO NOT TOUCH PLEASE. -----
 @app.route("/loading", methods=["GET", "POST"])
 def loading():
     if request.method == "GET":
@@ -114,4 +128,3 @@ def loading():
         with open(url, "r") as f:
             content = f.read()
             return render_template_string(content)
-    
