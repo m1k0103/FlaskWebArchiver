@@ -2,5 +2,38 @@
 
 {% block title %} FA | Timeline {% endblock %}
 {% block content %}
-    <h1>Timeline of page xyz</h1>
+    <h1>Timeline of page {{ website_list[0][0] }}</h1>
+
+    {% for url,path in website_list %}
+    <div>
+        <p>{{ url }} <a href="#" name="{{ path }}" onclick="view(this)">View</a></p>
+        
+    </div>
+
+    {% endfor %}
+
+
+<script>
+function view(el){
+    var path = el.name
+    console.log(path)
+    var xhr = new XMLHttpRequest()
+    xhr.open("POST", "/timeline")
+    xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
+    const body = JSON.stringify({
+        path_to_render:path
+    })
+    xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+        document.write(xhr.responseText)
+    }
+}
+    xhr.send(body)
+    console.log(body)
+    console.log("sent")
+    
+}
+</script>
+
+
 {% endblock %}
