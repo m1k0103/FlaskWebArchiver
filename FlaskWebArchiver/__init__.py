@@ -33,7 +33,7 @@ def start():
             cursor = c.cursor()
 
             #creates table for indexes table
-            cursor.execute("CREATE TABLE all_sites(url_id INTEGER PRIMARY KEY NOT NULL, url STRING, table_name STRING)")
+            cursor.execute("CREATE TABLE all_sites(url_id INTEGER PRIMARY KEY NOT NULL, url STRING, table_name STRING,timestamp STRING)")
             c.commit()
             
         else:

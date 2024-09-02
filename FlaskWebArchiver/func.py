@@ -65,20 +65,19 @@ def create_website_save(url,index_path,timestamp):
 
     if len(cursor.execute(f"SELECT name FROM sqlite_master WHERE name='{table_name}'").fetchall()) > 0:
         print("table already exists. not creating new table. inserting data")
-        cursor.execute(f"INSERT INTO {table_name} (url,index_path,timestamp) VALUES (?,?,?)", [url,index_path,timestamp])
+        cursor.execute(f"INSERT INTO {table_name} (url,index_path) VALUES (?,?)", [url,index_path])
         con.commit()
 
     else:
         print("table doesnt exist. creating new table.")
-        cursor.execute(f"CREATE TABLE {table_name} (id,url STRING, index_path STRING, timestamp STRING, FOREIGN KEY(id) REFERENCES all_sites(url_id))")
+        cursor.execute(f"CREATE TABLE {table_name} (id,url STRING, index_path STRING, FOREIGN KEY(id) REFERENCES all_sites(url_id))")
         con.commit()
-        cursor.execute(f"INSERT INTO {table_name} (url,index_path,timestamp) VALUES (?,?,?)", [url,index_path,timestamp])
+        cursor.execute(f"INSERT INTO {table_name} (url,index_path) VALUES (?,?)", [url,index_path])
         print(f"inserted data into table {table_name}")
         con.commit()
     
-    #new connection because why not idk
 
-    cursor.execute(f"INSERT INTO all_sites(url, table_name) VALUES (?,?)", [url, table_name])
+    cursor.execute(f"INSERT INTO all_sites(url, table_name, timestamp) VALUES (?,?,?)", [url, table_name,timestamp])
     con.commit()
     con.close()
     return True # completed successfully
@@ -90,7 +89,11 @@ def get_stats(username):
     total_searches = result[0]
     total_saves = result[1]
     return total_searches,total_saves
+
+def get_scrapes(url,lowertimestamp, uppertimestamp):
     
+    pass
+
 #get_stats("test")
 #print(makeAccount("admin1","secret_password","admin@website.com"))
 #print(checkUserExists("admin1"))
