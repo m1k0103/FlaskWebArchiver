@@ -2,5 +2,15 @@
 
 {% block title %} FA | Searching archive {% endblock %}
 {% block content %}
-    <h1>search here bla bla</h1>
+    <h1>search for here</h1>
+    <form action="search" method="post">
+        <label for="url">Url:</label>
+        <input type="text" name="url" id="url">
+        <br>
+        <label for="date">Date:</label>
+        <input type="date" name="date" id="date">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+
 {% endblock %}
