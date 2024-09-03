@@ -6,6 +6,7 @@ import hashlib
 import random
 import datetime
 import time
+import string
 
 def md5hash(input):
     return hashlib.md5(input.encode()).hexdigest()
@@ -123,11 +124,36 @@ def update_stats(user,stat,amount):
     con.close()
     return True
 
+def generate_code():
+    code = f"{random.choices(string.digits, k=6)}"
+    return code
+
+def add_vercode_2db(vcode,email):
+    con = sqlite3.connect("user.db")
+    cursor = con.cursor()
+    try:
+        result = cursor.execute("UPDATE userdata SET vercode=? WHERE email=?", [vcode,email])
+    except:
+        print(f"failed to add verification code to account with email {email}")
+    con.commit()
+    con.close()
+    return True
+
+def compare_vercode(input_code, email):
+    con = sqlite3.connect("user.db")
+    cursor = con.cursor()
+    stored_code = cursor.execute("SELECT vercode FROM userdata WHERE email=?", [email]).fetchall()[0][0]
+    if input_code == stored_code:
+        return True
+    else:
+        return False
+
+
 
 #get_stats("test")
 #print(makeAccount("admin1","secret_password","admin@website.com"))
 #print(checkUserExists("admin1"))
 #print(checkPassword("admin1", "secret_password"))
 #get_website_from_time("https://google.com","2024-09-02")
-
 #update_stats("test","total_searches","1")
+#add_vercode_2db("013845","test@test.com")
