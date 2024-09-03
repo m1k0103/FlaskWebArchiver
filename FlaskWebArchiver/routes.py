@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, url_for, jsonify, redirect, session, render_template_string
-from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats, get_website_from_time
+from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats, get_website_from_time, update_stats
 from FlaskWebArchiver.secret_key import SECRET_KEY
 from FlaskWebArchiver.scrape_website import scrape
 
@@ -75,6 +75,7 @@ def archive():
     if request.method == "POST": # if authed archive
         if "logged_in" in session and session["logged_in"]:
             url = request.form["archive"]
+            update_stats(session["username"], "total_saves", 1)
             return render_template("loading.html", urltoarchive=url)
         else: # if not authed archive
             session["free_archives"] -= 1
@@ -93,7 +94,6 @@ def archive():
             else: 
                 session["free_archives"] = 5
             return render_template("archive.html", free_archives=session["free_archives"])
-
 
 @app.route("/timeline",methods=["GET","POST"])
 def timeline():
@@ -114,6 +114,7 @@ def search():
         date = request.form["date"]
         website_list = get_website_from_time(url,date)    
         print(website_list)
+        update_stats(session["username"], "total_searches", 1)
         return render_template("timeline.html", website_list=website_list)
 
 # ----- FINISHED. DO NOT TOUCH PLEASE. -----
