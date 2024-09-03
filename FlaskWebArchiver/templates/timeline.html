@@ -2,15 +2,20 @@
 
 {% block title %} FA | Timeline {% endblock %}
 {% block content %}
-    <h1>Timeline of page {{ website_list[0][0] }}</h1>
 
-    {% for url,path in website_list %}
-    <div>
-        <p>{{ url }} <a href="#" name="{{ path }}" onclick="view(this)">View</a></p>
-        
-    </div>
+    {% if website_list.length == 0 %}
 
-    {% endfor %}
+        <h1>Timeline of page {{ website_list[0][0] }}</h1>
+
+        {% for url,path in website_list %}
+        <div>
+            <p>{{ url }} <a href="#" name="{{ path }}" onclick="view(this)">View</a></p>
+        </div>
+
+        {% endfor %}
+    {% else %}
+        <h1>The website you provided has not been saved in the selected date.</h1>
+    {% endif %}
 
 
 <script>

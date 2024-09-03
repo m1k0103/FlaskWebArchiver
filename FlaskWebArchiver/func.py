@@ -103,9 +103,27 @@ def get_website_from_time(url,date):
     con.close()
     return list(a)
 
+def update_stats(user,stat,amount):
+    # test | total_searches | 1
+    con = sqlite3.connect("user.db")
+    cursor = con.cursor()
+    if stat == "total_searches":
+        current_count = cursor.execute("SELECT total_searches FROM userdata WHERE username=?",[user]).fetchall()[0][0]
+        cursor.execute("UPDATE userdata SET total_searches=? WHERE username=?",[current_count+int(amount),user])
+    elif stat == "total_saves":
+        current_count = cursor.execute("SELECT total_saves FROM userdata WHERE username=?",[user]).fetchall()
+        cursor.execute("UPDATE userdata SET total_saves=? WHERE username=?",[current_count+int(amount), user])
+    else:
+        raise NameError
+    con.commit()
+    con.close()
+    return True
+
+
 #get_stats("test")
 #print(makeAccount("admin1","secret_password","admin@website.com"))
 #print(checkUserExists("admin1"))
 #print(checkPassword("admin1", "secret_password"))
+#get_website_from_time("https://google.com","2024-09-02")
 
-get_website_from_time("https://google.com","2024-09-02")
+#update_stats("test","total_searches","1")
