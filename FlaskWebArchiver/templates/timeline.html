@@ -4,6 +4,8 @@
 {% block content %}
 
     {% if website_list.length == 0 %}
+        <h1>The website you provided has not been saved in the selected date.</h1>
+    {% else %}
 
         <h1>Timeline of page {{ website_list[0][0] }}</h1>
 
@@ -13,8 +15,7 @@
         </div>
 
         {% endfor %}
-    {% else %}
-        <h1>The website you provided has not been saved in the selected date.</h1>
+    
     {% endif %}
 
 
