@@ -1,10 +1,23 @@
 from flask import Flask, request, render_template, url_for, jsonify, redirect, session, render_template_string
-from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats, get_website_from_time, update_stats
-from FlaskWebArchiver.secret_key import SECRET_KEY
+from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats, get_website_from_time, update_stats, generate_code, add_vercode_2db
+from FlaskWebArchiver.secret_key import SECRET_KEY, MAIL_ACCOUNT, MAIL_PASS
 from FlaskWebArchiver.scrape_website import scrape
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
+
+#mail config
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 465
+app.config["MAIL_USERNAME"] = MAIL_ACCOUNT
+app.config["MAIL_PASSWORD"] = MAIL_PASS
+app.config["MAIL_USE_TLS"] = False
+app.config["MAIL_USE_SSL"] = True
+mail = Mail(app)
+
 app.secret_key = SECRET_KEY
+
+RESET_PASSWORD_SUBJECT = "Hello, you have requested a password reset on the FlaskWebsiteArchiver.\n Please do not share if with anyone.\n\n Your code is: "
 
 @app.route("/")
 def homepage():
@@ -55,9 +68,20 @@ def logout():
     return redirect(url_for('homepage'))
 
 
-@app.route("/forgotpassword")
-def forgot_pass():
-    return render_template("forgotpassword.html")
+@app.route("/forgotpassword",methods=["GET","POST"])
+def forgotpassword():
+    if request.method == "GET":
+        return render_template("forgotpassword.html",stage="stage1")
+    elif request.method == "POST":
+        target_mail = request.form["emailField"]
+        msg = Message("Password Reset Code", sender='noreply@flaskwebarchiver.com',recipients=[target_mail])
+        code = generate_code()
+        msg.body=f"{RESET_PASSWORD_SUBJECT}{code}"
+        mail.send(msg)
+        add_vercode_2db(code,target_mail)
+        return render_template("forgotpassword.html",stage="stage2")
+    
+
 
 # ----- FINISHED. DO NOT TOUCH PLEASE. -----
 @app.route("/dashboard")
@@ -95,6 +119,7 @@ def archive():
                 session["free_archives"] = 5
             return render_template("archive.html", free_archives=session["free_archives"])
 
+# ----- FINISHED. DO NOT TOUCH PLEASE. -----
 @app.route("/timeline",methods=["GET","POST"])
 def timeline():
     if request.method == "GET":
@@ -105,6 +130,7 @@ def timeline():
             content = f.read()
             return content
 
+# ----- FINISHED. DO NOT TOUCH PLEASE. -----
 @app.route("/search",methods=["GET","POST"])
 def search():
     if request.method == "GET":
