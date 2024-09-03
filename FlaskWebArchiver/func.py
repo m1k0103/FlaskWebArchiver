@@ -92,7 +92,11 @@ def get_stats(username):
     return total_searches,total_saves
 
 def get_website_from_time(url,date):
-    from_timestamp = time.mktime(datetime.datetime.strptime(date,"%Y-%m-%d").timetuple()) # start of the day
+    if date == "":
+        from_timestamp = time.mktime(datetime.datetime.strptime(str(datetime.datetime.today()).split(" ")[0],'%Y-%m-%d').timetuple())
+        print(from_timestamp)
+    else:
+        from_timestamp = time.mktime(datetime.datetime.strptime(date,"%Y-%m-%d").timetuple()) # start of the day
     to_timestamp = from_timestamp + 1693781999 # 1 second before the day ends
     con = sqlite3.connect("website_data.db")
     cursor = con.cursor()
@@ -109,10 +113,10 @@ def update_stats(user,stat,amount):
     cursor = con.cursor()
     if stat == "total_searches":
         current_count = cursor.execute("SELECT total_searches FROM userdata WHERE username=?",[user]).fetchall()[0][0]
-        cursor.execute("UPDATE userdata SET total_searches=? WHERE username=?",[current_count+int(amount),user])
+        cursor.execute("UPDATE userdata SET total_searches=? WHERE username=?",[int(current_count)+int(amount),user])
     elif stat == "total_saves":
-        current_count = cursor.execute("SELECT total_saves FROM userdata WHERE username=?",[user]).fetchall()
-        cursor.execute("UPDATE userdata SET total_saves=? WHERE username=?",[current_count+int(amount), user])
+        current_count = cursor.execute("SELECT total_saves FROM userdata WHERE username=?",[user]).fetchall()[0][0]
+        cursor.execute("UPDATE userdata SET total_saves=? WHERE username=?",[int(current_count)+int(amount), user])
     else:
         raise NameError
     con.commit()
