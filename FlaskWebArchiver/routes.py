@@ -67,7 +67,7 @@ def logout():
     session.clear()
     return redirect(url_for('homepage'))
 
-
+# ----- FINISHED. DO NOT TOUCH PLEASE. -----
 @app.route("/forgotpassword",methods=["GET","POST"])
 def forgotpassword():
     if request.method == "GET":
@@ -82,15 +82,17 @@ def forgotpassword():
             mail.send(msg)
             print(f"sent mail to {target_mail}")
             add_vercode_2db(code,target_mail)
-            return render_template("forgotpassword.html",stage="stage2")
+            return render_template("forgotpassword.html",stage="stage2",mail=target_mail)
         if request.form["stage"] == "stage2": # if in second stage
             input_code = request.form["input_code"]
+            target_mail = request.form["mail"]
             if check_vercode_validity(input_code, target_mail) == True:
-                return render_template("forgotpassword.html",stage="stage3")
+                return render_template("forgotpassword.html",stage="stage3",mail=target_mail)
             else:
                 return render_template("error.html", error="Your input code was not valid. Please try the whole process again.")
         if request.form["stage"] == "stage3": # if finished
             newpassword = request.form["newpassword"]
+            target_mail = request.form["mail"]
             change_user_password(newpassword,target_mail)
             return render_template("forgotpassword.html",stage="done")
     
