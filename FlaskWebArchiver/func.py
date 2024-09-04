@@ -144,7 +144,7 @@ def check_vercode_validity(input_code, email):
     con = sqlite3.connect("user.db")
     cursor = con.cursor()
     stored_code = cursor.execute("SELECT vercode FROM userdata WHERE email=?", [email]).fetchall()[0][0]
-    if input_code == stored_code:
+    if int(input_code) == int(stored_code):
         return True
     else:
         return False
@@ -152,7 +152,7 @@ def check_vercode_validity(input_code, email):
 def change_user_password(newpass,email):
     con = sqlite3.connect("user.db")
     cursor = con.cursor()
-    cursor.execute("UPDATE userdata SET password=? WHERE email=?", [newpass,email])    
+    cursor.execute("UPDATE userdata SET phash=? WHERE email=?", [md5hash(newpass),email])    
     con.commit()
     con.close()
     return True
