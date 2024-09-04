@@ -47,7 +47,7 @@ def start():
     #creates secret_key used for auth
     if "secret_key.py" not in os.listdir("./FlaskWebArchiver"):
         with open("./FlaskWebArchiver/secret_key.py", "w") as f:
-            f.write(f"SECRET_KEY = b\"\"\"{''.join(random.choices(string.printable, k=16))}\"\"\"")
+            f.write(f"SECRET_KEY = b\"\"\"{''.join(random.choices(string.printable, k=16))}\"\"\"\nMAIL_ACCOUNT=\nMAIL_PASS=\n")
     else:
         pass
 
