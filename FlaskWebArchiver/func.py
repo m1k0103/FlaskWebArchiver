@@ -125,7 +125,8 @@ def update_stats(user,stat,amount):
     return True
 
 def generate_code():
-    code = f"{random.choices(string.digits, k=6)}"
+    digits = random.choices(string.digits, k=6)
+    code = "".join(digits)
     return code
 
 def add_vercode_2db(vcode,email):
@@ -139,7 +140,7 @@ def add_vercode_2db(vcode,email):
     con.close()
     return True
 
-def compare_vercode(input_code, email):
+def check_vercode_validity(input_code, email):
     con = sqlite3.connect("user.db")
     cursor = con.cursor()
     stored_code = cursor.execute("SELECT vercode FROM userdata WHERE email=?", [email]).fetchall()[0][0]
@@ -148,6 +149,13 @@ def compare_vercode(input_code, email):
     else:
         return False
 
+def change_user_password(newpass,email):
+    con = sqlite3.connect("user.db")
+    cursor = con.cursor()
+    cursor.execute("UPDATE userdata SET password=? WHERE email=?", [newpass,email])    
+    con.commit()
+    con.close()
+    return True
 
 
 #get_stats("test")
@@ -157,3 +165,4 @@ def compare_vercode(input_code, email):
 #get_website_from_time("https://google.com","2024-09-02")
 #update_stats("test","total_searches","1")
 #add_vercode_2db("013845","test@test.com")
+#print(generate_code())
