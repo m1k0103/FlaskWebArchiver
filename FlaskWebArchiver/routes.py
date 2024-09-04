@@ -1,5 +1,5 @@
-from flask import Flask, request, render_template, url_for, jsonify, redirect, session, render_template_string
-from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats, get_website_from_time, update_stats, generate_code, add_vercode_2db
+from flask import Flask, request, render_template, url_for, abort, redirect, session, render_template_string
+from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats, get_website_from_time, update_stats, generate_code, add_vercode_2db, check_vercode_validity, change_user_password
 from FlaskWebArchiver.secret_key import SECRET_KEY, MAIL_ACCOUNT, MAIL_PASS
 from FlaskWebArchiver.scrape_website import scrape
 from flask_mail import Mail, Message
@@ -7,12 +7,12 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 
 #mail config
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
-app.config["MAIL_PORT"] = 465
+app.config["MAIL_SERVER"] = "smtp.office365.com"
+app.config["MAIL_PORT"] = 587
 app.config["MAIL_USERNAME"] = MAIL_ACCOUNT
 app.config["MAIL_PASSWORD"] = MAIL_PASS
-app.config["MAIL_USE_TLS"] = False
-app.config["MAIL_USE_SSL"] = True
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USE_SSL"] = False
 mail = Mail(app)
 
 app.secret_key = SECRET_KEY
@@ -71,15 +71,28 @@ def logout():
 @app.route("/forgotpassword",methods=["GET","POST"])
 def forgotpassword():
     if request.method == "GET":
+        print("---------- did GET")
         return render_template("forgotpassword.html",stage="stage1")
     elif request.method == "POST":
-        target_mail = request.form["emailField"]
-        msg = Message("Password Reset Code", sender='noreply@flaskwebarchiver.com',recipients=[target_mail])
-        code = generate_code()
-        msg.body=f"{RESET_PASSWORD_SUBJECT}{code}"
-        mail.send(msg)
-        add_vercode_2db(code,target_mail)
-        return render_template("forgotpassword.html",stage="stage2")
+        if request.form["stage"] == "stage1": # if in first stage
+            target_mail = request.form["emailField"]
+            msg = Message("Password Reset Code", sender='flaskwebarchiver@outlook.com',recipients=[target_mail])
+            code = generate_code()
+            msg.body=f"{RESET_PASSWORD_SUBJECT}{code}"
+            mail.send(msg)
+            print(f"sent mail to {target_mail}")
+            add_vercode_2db(code,target_mail)
+            return render_template("forgotpassword.html",stage="stage2")
+        if request.form["stage"] == "stage2": # if in second stage
+            input_code = request.form["input_code"]
+            if check_vercode_validity(input_code, target_mail) == True:
+                return render_template("forgotpassword.html",stage="stage3")
+            else:
+                return render_template("error.html", error="Your input code was not valid. Please try the whole process again.")
+        if request.form["stage"] == "stage3": # if finished
+            newpassword = request.form["newpassword"]
+            change_user_password(newpassword,target_mail)
+            return render_template("forgotpassword.html",stage="done")
     
 
 
