@@ -1,13 +1,14 @@
 # Flask Web Archiver
 
-## This is my final Computer Science project
+## Installation and setup
 
-### This is also the first time I'm properly trying to use markdown which is weird. But its cool.
+To install and setup, run the following commands in a terminal.
 
-`Woah this is code`
+1. `git clone https://github.com/miko103/FlaskWebArchiver.git`
+2. `cd FlaskWebArchiver`
+3. `python3 pip install -r requrements.txt`
+4. `python3 start.py`
 
-**Now epic bold text!**
+This should create three files called `user.db`, `website_data.db` in the current installation directory, and `secret_key.py` in the FlaskWebArchiver app folder.
 
-Okay no more.
-
-**Gonna be working on this mostly now. Its not like I know what else to code :-1:**
+**Please open an issue if you find a bug or issue.**
