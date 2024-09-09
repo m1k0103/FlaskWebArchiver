@@ -104,7 +104,7 @@ def dashboard():
     if "logged_in" in session and session["logged_in"]:
         username = session.get("username")
         stats = get_stats(username)
-        return render_template("dashboard.html", total_searches=stats[0], total_saves=stats[1])
+        return render_template("dashboard.html", total_searches=stats[0], total_saves=stats[1], saved_sites=stats[2])
     else:
         return render_template("dashboard.html")
 
