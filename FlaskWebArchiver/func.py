@@ -100,7 +100,6 @@ def get_website_from_time(url,start_date,end_date):
     else:
         start_timestamp = time.mktime(datetime.datetime.strptime(start_date,"%Y-%m-%d").timetuple())
     
-
     # if no end_date is provided, it will assume you're searching from a date to the present day.
     if end_date == "": 
         end_timestamp = time.mktime(datetime.datetime.strptime(str(datetime.datetime.today()).split(" ")[0],'%Y-%m-%d').timetuple())
