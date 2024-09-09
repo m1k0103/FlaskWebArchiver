@@ -57,13 +57,13 @@ def makeAccount(username,password,email):
         con.close()
         return f"user {username} registered"
 
-def create_website_save(url,index_path,timestamp):
+def create_website_save(url,index_path,timestamp, scraped_by_user):
     os.chdir("../../../")
     con = sqlite3.connect("website_data.db")
     cursor = con.cursor()
     
     #creates website index table
-    table_name = f"table{random.randint(0,100000000)}"
+    table_name = f"table{random.randint(0,10000000000)}"
 
     if len(cursor.execute(f"SELECT name FROM sqlite_master WHERE name='{table_name}'").fetchall()) > 0:
         print("table already exists. not creating new table. inserting data")
@@ -79,7 +79,7 @@ def create_website_save(url,index_path,timestamp):
         con.commit()
     
 
-    cursor.execute(f"INSERT INTO all_sites(url, table_name, timestamp) VALUES (?,?,?)", [url, table_name,timestamp])
+    cursor.execute(f"INSERT INTO all_sites(url, table_name, timestamp, scraped_by) VALUES (?,?,?,?)", [url, table_name,timestamp,scraped_by_user])
     con.commit()
     con.close()
     return True # completed successfully

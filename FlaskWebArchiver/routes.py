@@ -171,7 +171,11 @@ def loading():
         return render_template("loading.html")
     elif request.method == "POST":
         from_post = request.json["url"]
-        url = scrape(from_post)
+        try: # if user is logged in it will use session["username"]
+            url = scrape(from_post, session["username"])
+        except: # else it will use a blank string
+            url = scrape(from_post, "")
+    
         print(url)
         with open(url, "r") as f:
             content = f.read()
