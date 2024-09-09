@@ -16,34 +16,33 @@ def start():
     if USER_DB_NAME not in os.listdir():
         os.system(f'echo > {USER_DB_NAME}')
         print("[+] user database created")
+         # creates table for user data
         c = sqlite3.connect(USER_DB_NAME)
         cursor = c.cursor()
-
-        # creates table for user data
         cursor.execute("CREATE TABLE userdata(user_id INTEGER PRIMARY KEY,username STRING NOT NULL,phash STRING NOT NULL,email STRING NOT NULL, total_searches INTEGER, total_saves INTEGER, vercode STRING)")
         c.commit()
         c.close()
         print("[+] table 'userdata' created in user table")
+
+
+    else:
+        print(["[!] website database already exists"])
+
+
+    
+    if WEBSITE_DB_NAME not in os.listdir():
+        os.system(f'echo > {WEBSITE_DB_NAME}')
+        print("[+] website database created")
+        #creates table for indexes table
+        c = sqlite3.connect(WEBSITE_DB_NAME)
+        cursor = c.cursor()
+        cursor.execute("CREATE TABLE all_sites(url_id INTEGER PRIMARY KEY NOT NULL, url STRING, table_name STRING,timestamp STRING, scraped_by STRING)")
+        c.commit()
         
-        if WEBSITE_DB_NAME not in os.listdir():
-            os.system(f'echo > {WEBSITE_DB_NAME}')
-            print("[+] website database created")
-
-            c = sqlite3.connect(WEBSITE_DB_NAME)
-            cursor = c.cursor()
-
-            #creates table for indexes table
-            cursor.execute("CREATE TABLE all_sites(url_id INTEGER PRIMARY KEY NOT NULL, url STRING, table_name STRING,timestamp STRING)")
-            c.commit()
-            
-        else:
-            print(["[!] website database already exists"])
-
     else:
         print("[!] user database already exists\n")
     
     
-
     #creates secret_key used for auth
     if "secret_key.py" not in os.listdir("./FlaskWebArchiver"):
         with open("./FlaskWebArchiver/secret_key.py", "w") as f:
@@ -56,7 +55,8 @@ def start():
         os.mkdir("FlaskWebArchiver/website_saves")
     except:
         print("[!] website_saves already exists")
-        
+    
+    
     print("[!] starting program")
     from FlaskWebArchiver.routes import app
     app.run(host="0.0.0.0", port="5000",debug=True)
