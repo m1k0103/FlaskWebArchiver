@@ -3,7 +3,7 @@
 {% block title %} FA | Timeline {% endblock %}
 {% block content %}
 
-    {% if website_list.length == 0 %}
+    {% if website_list.length == 0 or not website_list %}
         <h1>The website you provided has not been saved in the selected date.</h1>
     {% else %}
 
