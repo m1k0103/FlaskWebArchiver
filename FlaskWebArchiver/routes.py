@@ -152,11 +152,17 @@ def search():
         return render_template("search.html")
     elif request.method == "POST":
         url = request.form["url"]
-        date = request.form["date"]
-        website_list = get_website_from_time(url,date)    
+        start_date = request.form["start_date"]
+        end_date = request.form["end_date"]
+        website_list = get_website_from_time(url,start_date,end_date)    
         print(website_list)
-        update_stats(session["username"], "total_searches", 1)
+        try:
+            update_stats(session["username"], "total_searches", 1)
+        except:
+            print("failed to update statistics. user may not be logged in")
+            pass
         return render_template("timeline.html", website_list=website_list)
+
 
 # ----- FINISHED. DO NOT TOUCH PLEASE. -----
 @app.route("/loading", methods=["GET", "POST"])
