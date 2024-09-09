@@ -12,7 +12,26 @@
                 <li>Total searches: {{ total_searches }}</li>
             </ul>
         </h4>
+        {% if saved_sites.length == 0 or not saved_sites %}
+            <h4>You have not scraped any sites. When you do, they will be displayed here.</h4>
+        {% else %}
+        <p>Your saved websites: </p>
     
+        <table class="table">
+            <th class="table">URL</th>
+            <th class="table">Time Saved</th>
+            {% for site in saved_sites%}
+                <tr class="table">
+                {% for data in site%}
+                    <td class="table">{{data}}</td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+    
+
     
     {% else %}
     <p>You are not logged in. To view the dashboard, please <a href="{{ url_for('login') }}">login here</a> or <a href="{{ url_for('signup') }}">sign up here.</a></p>
