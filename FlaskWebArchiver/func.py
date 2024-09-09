@@ -90,7 +90,14 @@ def get_stats(username):
     result = cursor.execute("SELECT total_searches,total_saves FROM userdata WHERE username=?", [username]).fetchall()[0]
     total_searches = result[0]
     total_saves = result[1]
-    return total_searches,total_saves
+    cursor.close()
+    con.close()
+    #creates new connection
+    con = sqlite3.connect("website_data.db")
+    cursor = con.cursor()
+    result = cursor.execute("SELECT url,timestamp FROM all_sites WHERE scraped_by=?", [username]).fetchall()
+    scraped_sites = [list(mini_list) for mini_list in result]
+    return total_searches,total_saves, scraped_sites
 
 def get_website_from_time(url,start_date,end_date):
 
@@ -175,3 +182,4 @@ def change_user_password(newpass,email):
 #add_vercode_2db("013845","test@test.com")
 #print(generate_code())
 #get_website_from_time("https://google.com", "2024-09-02", "")
+get_stats("test")
