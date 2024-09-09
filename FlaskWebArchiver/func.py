@@ -92,16 +92,25 @@ def get_stats(username):
     total_saves = result[1]
     return total_searches,total_saves
 
-def get_website_from_time(url,date):
-    if date == "":
-        from_timestamp = time.mktime(datetime.datetime.strptime(str(datetime.datetime.today()).split(" ")[0],'%Y-%m-%d').timetuple())
-        print(from_timestamp)
+def get_website_from_time(url,start_date,end_date):
+
+    #if no start_date provided, it will just show the first ever timestamp
+    if start_date == "":
+        start_timestamp = 0
     else:
-        from_timestamp = time.mktime(datetime.datetime.strptime(date,"%Y-%m-%d").timetuple()) # start of the day
-    to_timestamp = from_timestamp + 1693781999 # 1 second before the day ends
+        start_timestamp = time.mktime(datetime.datetime.strptime(start_date,"%Y-%m-%d").timetuple())
+    
+
+    # if no end_date is provided, it will assume you're searching from a date to the present day.
+    if end_date == "": 
+        end_timestamp = time.mktime(datetime.datetime.strptime(str(datetime.datetime.today()).split(" ")[0],'%Y-%m-%d').timetuple())
+        print(end_timestamp)
+    else:
+        end_timestamp = time.mktime(datetime.datetime.strptime(end_date,"%Y-%m-%d").timetuple()) # start of the day
+    end_timestamp = end_timestamp + 86399 # 1 second before the day ends
     con = sqlite3.connect("website_data.db")
     cursor = con.cursor()
-    result = cursor.execute("SELECT table_name FROM all_sites WHERE url=? AND timestamp >= ? AND timestamp <= ?", [url, from_timestamp, to_timestamp]).fetchall()
+    result = cursor.execute("SELECT table_name FROM all_sites WHERE url=? AND timestamp >= ? AND timestamp <= ?", [url, start_timestamp, end_timestamp]).fetchall()
     a = []
     for table in result:
         a.append(cursor.execute(f"SELECT url,index_path FROM {table[0]}").fetchall()[0])
@@ -166,3 +175,4 @@ def change_user_password(newpass,email):
 #update_stats("test","total_searches","1")
 #add_vercode_2db("013845","test@test.com")
 #print(generate_code())
+#get_website_from_time("https://google.com", "2024-09-02", "")
