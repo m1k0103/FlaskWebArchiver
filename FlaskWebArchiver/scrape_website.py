@@ -12,7 +12,7 @@ def save_file(name, raw_data):
     except:
         print(f"an error occured when saving file called {name}")
 
-def scrape(url):
+def scrape(url, scraped_by_user):
     netloc = urlsplit(url)[1]
     scheme = urlsplit(url)[0]
     query = urlsplit(url)[3].split(".")
@@ -57,5 +57,5 @@ def scrape(url):
     
     indexpath = f"./FlaskWebArchiver/website_saves/{netloc}_{timestamp}/index.html" # this is what will be saved in the database
 
-    create_website_save(url, indexpath, timestamp)
+    create_website_save(url, indexpath, timestamp, scraped_by_user)
     return indexpath

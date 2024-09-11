@@ -104,7 +104,7 @@ def dashboard():
     if "logged_in" in session and session["logged_in"]:
         username = session.get("username")
         stats = get_stats(username)
-        return render_template("dashboard.html", total_searches=stats[0], total_saves=stats[1])
+        return render_template("dashboard.html", total_searches=stats[0], total_saves=stats[1], saved_sites=stats[2])
     else:
         return render_template("dashboard.html")
 
@@ -152,11 +152,17 @@ def search():
         return render_template("search.html")
     elif request.method == "POST":
         url = request.form["url"]
-        date = request.form["date"]
-        website_list = get_website_from_time(url,date)    
+        start_date = request.form["start_date"]
+        end_date = request.form["end_date"]
+        website_list = get_website_from_time(url,start_date,end_date)    
         print(website_list)
-        update_stats(session["username"], "total_searches", 1)
+        try:
+            update_stats(session["username"], "total_searches", 1)
+        except:
+            print("failed to update statistics. user may not be logged in")
+            pass
         return render_template("timeline.html", website_list=website_list)
+
 
 # ----- FINISHED. DO NOT TOUCH PLEASE. -----
 @app.route("/loading", methods=["GET", "POST"])
@@ -165,7 +171,11 @@ def loading():
         return render_template("loading.html")
     elif request.method == "POST":
         from_post = request.json["url"]
-        url = scrape(from_post)
+        try: # if user is logged in it will use session["username"]
+            url = scrape(from_post, session["username"])
+        except: # else it will use a blank string
+            url = scrape(from_post, "")
+    
         print(url)
         with open(url, "r") as f:
             content = f.read()
