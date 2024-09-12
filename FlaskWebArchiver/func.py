@@ -11,11 +11,6 @@ import string
 def md5hash(input):
     return hashlib.md5(input.encode()).hexdigest()
 
-def get_links(url): # the scraper
-    soup = BeautifulSoup(requests.get(url=url).text)
-    print(soup)
-
-
 def checkUserExists(username):
     #print(os.getcwd())
     con = sqlite3.connect("user.db")
@@ -30,21 +25,18 @@ def checkUserExists(username):
         cursor.close()
         con.close()
 
-def checkPassword(username, password):
-    phash = md5hash(password)
-    con = sqlite3.connect("user.db")
+def check_password(username,password): # DONE
+    con = sqlite3.connect("test.db")
     cursor = con.cursor()
-    result = cursor.execute("select * from userdata where username=? and phash=?", (username,phash)).fetchall()
-    try:
-        if len(result) > 0:
-            return True
-        else:
-            return False
-    finally:
-        cursor.close()
+    phash = md5hash(password)
+    if str(phash) == cursor.execute("SELECT phash FROM userdata WHERE username=?", [username]).fetchall()[0][0]:
         con.close()
+        return True
+    else:
+        con.close()
+        return False 
 
-def makeAccount(username,password,email):
+def makeAccount(username,password,email): # rewrite
     if checkUserExists(username=username) == True:
         return False
     else:
@@ -57,7 +49,7 @@ def makeAccount(username,password,email):
         con.close()
         return f"user {username} registered"
 
-def create_website_save(url,index_path,timestamp, scraped_by_user):
+def create_website_save(url,index_path,timestamp, scraped_by_user): # rewrite
     os.chdir("../../../")
     con = sqlite3.connect("website_data.db")
     cursor = con.cursor()
@@ -69,7 +61,6 @@ def create_website_save(url,index_path,timestamp, scraped_by_user):
         print("table already exists. not creating new table. inserting data")
         cursor.execute(f"INSERT INTO {table_name} (url,index_path) VALUES (?,?)", [url,index_path])
         con.commit()
-
     else:
         print("table doesnt exist. creating new table.")
         cursor.execute(f"CREATE TABLE {table_name} (id,url STRING, index_path STRING, FOREIGN KEY(id) REFERENCES all_sites(url_id))")
@@ -77,29 +68,27 @@ def create_website_save(url,index_path,timestamp, scraped_by_user):
         cursor.execute(f"INSERT INTO {table_name} (url,index_path) VALUES (?,?)", [url,index_path])
         print(f"inserted data into table {table_name}")
         con.commit()
-    
 
     cursor.execute(f"INSERT INTO all_sites(url, table_name, timestamp, scraped_by) VALUES (?,?,?,?)", [url, table_name,timestamp,scraped_by_user])
     con.commit()
     con.close()
-    return True # completed successfully
+    return True
 
-def get_stats(username):
-    con = sqlite3.connect("user.db")
+def get_stats_by_username(username): # ---------- STILL HAVE TO ADD THE STATS ON WHICH WEBSITES HAVE BEEN SCRAPED BY USER
+    con = sqlite3.connect("test.db")
     cursor = con.cursor()
-    result = cursor.execute("SELECT total_searches,total_saves FROM userdata WHERE username=?", [username]).fetchall()[0]
-    total_searches = result[0]
-    total_saves = result[1]
-    cursor.close()
+
+    # selects something im not too sure lol
+    result = cursor.execute("SELECT userdata.stat_id, stats.total_searches, stats.total_saves FROM userdata JOIN stats ON (userdata.stat_id=stats.site_id) WHERE userdata.username=?", [username]).fetchall()[0]
+    total_searches = result[1]
+    total_saves = result[2]
+
     con.close()
-    #creates new connection
-    con = sqlite3.connect("website_data.db")
-    cursor = con.cursor()
-    result = cursor.execute("SELECT url,timestamp FROM all_sites WHERE scraped_by=?", [username]).fetchall()
-    scraped_sites = [list(mini_list) for mini_list in result]
-    return total_searches,total_saves, scraped_sites
 
-def get_website_from_time(url,start_date,end_date):
+    print(total_searches, total_saves)
+    return total_searches, total_saves
+
+def get_website_from_time(url,start_date,end_date): # rewrite
 
     #if no start_date provided, it will just show the first ever timestamp
     if start_date == "":
@@ -123,7 +112,7 @@ def get_website_from_time(url,start_date,end_date):
     con.close()
     return list(a)
 
-def update_stats(user,stat,amount):
+def update_stats(user,stat,amount): # rewrite
     # test | total_searches | 1
     con = sqlite3.connect("user.db")
     cursor = con.cursor()
@@ -139,12 +128,12 @@ def update_stats(user,stat,amount):
     con.close()
     return True
 
-def generate_code():
+def generate_code(): # rewrite
     digits = random.choices(string.digits, k=6)
     code = "".join(digits)
     return code
 
-def add_vercode_2db(vcode,email):
+def add_vercode_2db(vcode,email): # rewrite
     con = sqlite3.connect("user.db")
     cursor = con.cursor()
     try:
@@ -155,7 +144,7 @@ def add_vercode_2db(vcode,email):
     con.close()
     return True
 
-def check_vercode_validity(input_code, email):
+def check_vercode_validity(input_code, email): # rewrite
     con = sqlite3.connect("user.db")
     cursor = con.cursor()
     stored_code = cursor.execute("SELECT vercode FROM userdata WHERE email=?", [email]).fetchall()[0][0]
@@ -164,7 +153,7 @@ def check_vercode_validity(input_code, email):
     else:
         return False
 
-def change_user_password(newpass,email):
+def change_user_password(newpass,email): # rewrite
     con = sqlite3.connect("user.db")
     cursor = con.cursor()
     cursor.execute("UPDATE userdata SET phash=? WHERE email=?", [md5hash(newpass),email])    
@@ -182,4 +171,4 @@ def change_user_password(newpass,email):
 #add_vercode_2db("013845","test@test.com")
 #print(generate_code())
 #get_website_from_time("https://google.com", "2024-09-02", "")
-get_stats("test")
+#get_stats("test")
