@@ -10,38 +10,52 @@ import string
 #   > work on the theory too
 
 def start():
-    USER_DB_NAME = "user.db"
-    WEBSITE_DB_NAME = "website_data.db"
+    MAIN_DB_NAME = "database.db"
 
-    if USER_DB_NAME not in os.listdir():
-        os.system(f'echo > {USER_DB_NAME}')
-        print("[+] user database created")
-         # creates table for user data
-        c = sqlite3.connect(USER_DB_NAME)
-        cursor = c.cursor()
-        cursor.execute("CREATE TABLE userdata(user_id INTEGER PRIMARY KEY,username STRING NOT NULL,phash STRING NOT NULL,email STRING NOT NULL, total_searches INTEGER, total_saves INTEGER, vercode STRING)")
-        c.commit()
-        c.close()
-        print("[+] table 'userdata' created in user table")
+    if MAIN_DB_NAME not in os.listdir():
+        # creates table for user data
+        db = open(f'./{MAIN_DB_NAME}', 'w+')
+        db.close()
+
+        con = sqlite3.connect("test.db")
+        cursor = con.cursor()
+
+        cursor.execute("""CREATE TABLE stats(
+                   stat_id INTEGER PRIMARY KEY ,
+                   total_searches INT,
+                   total_saves INT
+                   )""")
+
+        #creates main userdata table
+        cursor.execute("""CREATE TABLE userdata(
+                       uid INTEGER PRIMARY KEY,
+                       username TEXT NOT NULL,
+                       phash TEXT NOT NULL,
+                       email TEXT NOT NULL,
+                       stat_id INT NOT NULL,
+                       vercode INT,
+                       FOREIGN KEY(stat_id) REFERENCES stats(stat_id)
+                       )""")
+
+        cursor.execute("""CREATE TABLE sites(
+                       site_id INTEGER PRIMARY KEY,
+                       scraped_by INT NOT NULL,
+                       FOREIGN KEY(scraped_by) REFERENCES userdata(uid)
+                       )""")
+
+        cursor.execute("""CREATE TABLE sites_data (
+                       site_id INTEGER PRIMARY KEY,
+                       url TEXT NOT NULL,
+                       timestamp RFLOATEAL NOT NULL,
+                       local_path TEXT NOT NULL,
+                       FOREIGN KEY(site_id) REFERENCES sites(site_id)
+                       )""")
 
 
-    else:
-        print(["[!] website database already exists"])
+        con.commit()
+        cursor.close()
+        con.close()
 
-
-    
-    if WEBSITE_DB_NAME not in os.listdir():
-        os.system(f'echo > {WEBSITE_DB_NAME}')
-        print("[+] website database created")
-        #creates table for indexes table
-        c = sqlite3.connect(WEBSITE_DB_NAME)
-        cursor = c.cursor()
-        cursor.execute("CREATE TABLE all_sites(url_id INTEGER PRIMARY KEY NOT NULL, url STRING, table_name STRING,timestamp STRING, scraped_by STRING)")
-        c.commit()
-        
-    else:
-        print("[!] user database already exists\n")
-    
     
     #creates secret_key used for auth
     if "secret_key.py" not in os.listdir("./FlaskWebArchiver"):
@@ -54,7 +68,7 @@ def start():
     try:
         os.mkdir("FlaskWebArchiver/website_saves")
     except:
-        print("[!] website_saves already exists")
+        print("[!] website_saves folder already exists")
     
     
     print("[!] starting program")
