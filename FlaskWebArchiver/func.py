@@ -11,7 +11,7 @@ import string
 def md5hash(input):
     return hashlib.md5(input.encode()).hexdigest()
 
-def checkUserExists(username):
+def checkUserExists(username): # unchanged
     #print(os.getcwd())
     con = sqlite3.connect("user.db")
     cursor = con.cursor()    
@@ -36,43 +36,39 @@ def check_password(username,password): # DONE
         con.close()
         return False 
 
-def makeAccount(username,password,email): # rewrite
+def makeAccount(username,password,email): # DONE i think
     if checkUserExists(username=username) == True:
         return False
     else:
         phash = md5hash(password)
         con = sqlite3.connect("user.db")
         cursor = con.cursor()
-        cursor.execute("INSERT INTO userdata (username,phash,email,total_saves,total_searches) VALUES (?,?,?,?,?)", [username,phash,email,0,0])
+        cursor.execute("INSERT INTO stats(total_searches, total_saves) VALUES (0,0)")
+        cursor.execute(f"INSERT INTO userdata(username,phash,email,vercode, stat_id) VALUES (?,?,?,NULL,{cursor.lastrowid})", [username,phash,email])
         con.commit()
         cursor.close()
         con.close()
         return f"user {username} registered"
 
-def create_website_save(url,index_path,timestamp, scraped_by_user): # rewrite
+def create_website_save(url,index_path,timestamp, scraped_by_user): # DONE
     os.chdir("../../../")
-    con = sqlite3.connect("website_data.db")
+    con = sqlite3.connect("test.db")
     cursor = con.cursor()
     
-    #creates website index table
-    table_name = f"table{random.randint(0,10000000000)}"
+    
+    #gets user ID from username provided
+    try:
+        uid  = cursor.execute("SELECT uid FROM userdata WHERE username=?", [scraped_by_user]).fetchall()[0][0]
+    except:
+        print("user doesnt exist")
+        uid = None
+    finally:
+        cursor.execute(f"INSERT INTO sites(scraped_by) VALUES ({uid})")
+        cursor.execute("INSERT INTO sites_data(url,timestamp,local_path) VALUES (?,?,?)", [url,timestamp,index_path])
 
-    if len(cursor.execute(f"SELECT name FROM sqlite_master WHERE name='{table_name}'").fetchall()) > 0:
-        print("table already exists. not creating new table. inserting data")
-        cursor.execute(f"INSERT INTO {table_name} (url,index_path) VALUES (?,?)", [url,index_path])
         con.commit()
-    else:
-        print("table doesnt exist. creating new table.")
-        cursor.execute(f"CREATE TABLE {table_name} (id,url STRING, index_path STRING, FOREIGN KEY(id) REFERENCES all_sites(url_id))")
-        con.commit()
-        cursor.execute(f"INSERT INTO {table_name} (url,index_path) VALUES (?,?)", [url,index_path])
-        print(f"inserted data into table {table_name}")
-        con.commit()
-
-    cursor.execute(f"INSERT INTO all_sites(url, table_name, timestamp, scraped_by) VALUES (?,?,?,?)", [url, table_name,timestamp,scraped_by_user])
-    con.commit()
-    con.close()
-    return True
+        con.close()
+        return True
 
 def get_stats_by_username(username): # ---------- STILL HAVE TO ADD THE STATS ON WHICH WEBSITES HAVE BEEN SCRAPED BY USER
     con = sqlite3.connect("test.db")
