@@ -110,7 +110,7 @@ def get_website_from_time(url,start_date,end_date): # DONE
     
     return websites # returns [[url, index_path], [url2, index_path2]]
 
-def update_stats(user,stat,amount): # rewrite ----------------------------------
+def update_stats(user,stat,amount): # DONE
     # bob | total_searches | 1
     con = sqlite3.connect("test.db")
     cursor = con.cursor()
@@ -131,8 +131,8 @@ def generate_code():
     code = "".join(digits)
     return code
 
-def add_vercode_2db(vcode,email): # rewrite
-    con = sqlite3.connect("user.db")
+def add_vercode_2db(vcode,email): # DONE?
+    con = sqlite3.connect("test.db")
     cursor = con.cursor()
     try:
         result = cursor.execute("UPDATE userdata SET vercode=? WHERE email=?", [vcode,email])
@@ -142,8 +142,8 @@ def add_vercode_2db(vcode,email): # rewrite
     con.close()
     return True
 
-def check_vercode_validity(input_code, email): # rewrite
-    con = sqlite3.connect("user.db")
+def check_vercode_validity(input_code, email): # DONE?
+    con = sqlite3.connect("test.db")
     cursor = con.cursor()
     stored_code = cursor.execute("SELECT vercode FROM userdata WHERE email=?", [email]).fetchall()[0][0]
     if int(input_code) == int(stored_code):
@@ -151,8 +151,8 @@ def check_vercode_validity(input_code, email): # rewrite
     else:
         return False
 
-def change_user_password(newpass,email): # rewrite
-    con = sqlite3.connect("user.db")
+def change_user_password(newpass,email): # DONE
+    con = sqlite3.connect("test.db")
     cursor = con.cursor()
     cursor.execute("UPDATE userdata SET phash=? WHERE email=?", [md5hash(newpass),email])    
     con.commit()
