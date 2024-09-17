@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, url_for, abort, redirect, session, render_template_string
-from FlaskWebArchiver.func import checkPassword, makeAccount, get_stats, get_website_from_time, update_stats, generate_code, add_vercode_2db, check_vercode_validity, change_user_password
+from FlaskWebArchiver.func import check_password, makeAccount, get_stats_by_username, get_website_from_time, update_stats, generate_code, add_vercode_2db, check_vercode_validity, change_user_password
 from FlaskWebArchiver.secret_key import SECRET_KEY, MAIL_ACCOUNT, MAIL_PASS
 from FlaskWebArchiver.scrape_website import scrape
 from flask_mail import Mail, Message
@@ -48,7 +48,7 @@ def login():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-        if checkPassword(username, password) == True: # if authenticated
+        if check_password(username, password) == True: # if authenticated
             session["logged_in"] = True
             session["username"] = username
             return redirect(url_for("dashboard"))
@@ -103,7 +103,7 @@ def forgotpassword():
 def dashboard():
     if "logged_in" in session and session["logged_in"]:
         username = session.get("username")
-        stats = get_stats(username)
+        stats = get_stats_by_username(username)
         return render_template("dashboard.html", total_searches=stats[0], total_saves=stats[1], saved_sites=stats[2])
     else:
         return render_template("dashboard.html")
