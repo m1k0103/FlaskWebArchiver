@@ -110,25 +110,23 @@ def get_website_from_time(url,start_date,end_date): # DONE
     
     return websites # returns [[url, index_path], [url2, index_path2]]
 
-def update_stats(user,stat,amount): # rewrite
+def update_stats(user,stat,amount): # rewrite ----------------------------------
     # bob | total_searches | 1
     con = sqlite3.connect("test.db")
     cursor = con.cursor()
+    data = cursor.execute("SELECT total_searches,total_saves FROM userdata JOIN stats ON (userdata.stat_id = stats.stat_id) WHERE username=?",[user]).fetchall()[0]
+    
     if stat == "total_searches":
-        current_count = cursor.execute("SELECT total_searches FROM userdata WHERE username=?",[user]).fetchall()[0][0]
-        #maybe use join statement for the above line?
-        cursor.execute("UPDATE userdata SET total_searches=? WHERE username=?",[int(current_count)+int(amount),user])
+        cursor.execute("UPDATE stats SET total_searches=(SELECT stats.total_searches FROM userdata JOIN stats ON userdata.stat_id=stats.stat_id WHERE username=?)+? WHERE stat_id=(SELECT stat_id FROM userdata WHERE username=?);",[user,amount, user])
     elif stat == "total_saves":
-        current_count = cursor.execute("SELECT total_saves FROM userdata WHERE username=?",[user]).fetchall()[0][0]
-        #maybe use join statement for the above line?
-        cursor.execute("UPDATE userdata SET total_saves=? WHERE username=?",[int(current_count)+int(amount), user])
+        cursor.execute("UPDATE stats SET total_saves=(SELECT stats.total_saves FROM userdata JOIN stats ON userdata.stat_id=stats.stat_id WHERE username=?)+? WHERE stat_id=(SELECT stat_id FROM userdata WHERE username=?);",[user,amount,user])
     else:
         raise NameError
     con.commit()
     con.close()
     return True
 
-def generate_code(): # rewrite
+def generate_code():
     digits = random.choices(string.digits, k=6)
     code = "".join(digits)
     return code
@@ -170,6 +168,7 @@ def change_user_password(newpass,email): # rewrite
 #update_stats("test","total_searches","1")
 #add_vercode_2db("013845","test@test.com")
 #print(generate_code())
-get_website_from_time("https://google.com", "2024-09-16", "")
+#get_website_from_time("https://google.com", "2024-09-16", "")
 #get_stats("test")
 #get_stats_by_username("bob")
+#update_stats('bob','total_saves',1)
