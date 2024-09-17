@@ -17,7 +17,7 @@ def start():
         db = open(f'./{MAIN_DB_NAME}', 'w+')
         db.close()
 
-        con = sqlite3.connect("test.db")
+        con = sqlite3.connect(MAIN_DB_NAME)
         cursor = con.cursor()
 
         cursor.execute("""CREATE TABLE stats(
