@@ -111,14 +111,16 @@ def get_website_from_time(url,start_date,end_date): # DONE
     return websites # returns [[url, index_path], [url2, index_path2]]
 
 def update_stats(user,stat,amount): # rewrite
-    # test | total_searches | 1
-    con = sqlite3.connect("user.db")
+    # bob | total_searches | 1
+    con = sqlite3.connect("test.db")
     cursor = con.cursor()
     if stat == "total_searches":
         current_count = cursor.execute("SELECT total_searches FROM userdata WHERE username=?",[user]).fetchall()[0][0]
+        #maybe use join statement for the above line?
         cursor.execute("UPDATE userdata SET total_searches=? WHERE username=?",[int(current_count)+int(amount),user])
     elif stat == "total_saves":
         current_count = cursor.execute("SELECT total_saves FROM userdata WHERE username=?",[user]).fetchall()[0][0]
+        #maybe use join statement for the above line?
         cursor.execute("UPDATE userdata SET total_saves=? WHERE username=?",[int(current_count)+int(amount), user])
     else:
         raise NameError
