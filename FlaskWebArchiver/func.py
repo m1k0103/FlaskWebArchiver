@@ -60,7 +60,7 @@ def create_website_save(url,index_path,timestamp, scraped_by_user): # DONE
         uid  = cursor.execute("SELECT uid FROM userdata WHERE username=?", [scraped_by_user]).fetchall()[0][0]
     except:
         print("user doesnt exist")
-        uid = None
+        uid = 0
     finally:
         cursor.execute(f"INSERT INTO sites(scraped_by) VALUES ({uid})")
         cursor.execute("INSERT INTO sites_data(url,timestamp,local_path) VALUES (?,?,?)", [url,timestamp,index_path])
