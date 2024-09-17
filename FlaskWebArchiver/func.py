@@ -13,7 +13,7 @@ def md5hash(input):
 
 def checkUserExists(username): # unchanged
     #print(os.getcwd())
-    con = sqlite3.connect("test.db")
+    con = sqlite3.connect("database.db")
     cursor = con.cursor()    
     result = cursor.execute("SELECT * FROM userdata WHERE username =?",[username]).fetchall()
     try:
@@ -26,7 +26,7 @@ def checkUserExists(username): # unchanged
         con.close()
 
 def check_password(username,password): # DONE
-    con = sqlite3.connect("test.db")
+    con = sqlite3.connect("database.db")
     cursor = con.cursor()
     phash = md5hash(password)
     if str(phash) == cursor.execute("SELECT phash FROM userdata WHERE username=?", [username]).fetchall()[0][0]:
@@ -41,7 +41,7 @@ def makeAccount(username,password,email): # DONE i think
         return False
     else:
         phash = md5hash(password)
-        con = sqlite3.connect("test.db")
+        con = sqlite3.connect("database.db")
         cursor = con.cursor()
         cursor.execute("INSERT INTO stats(total_searches, total_saves) VALUES (0,0)")
         cursor.execute(f"INSERT INTO userdata(username,phash,email,vercode, stat_id) VALUES (?,?,?,NULL,{cursor.lastrowid})", [username,phash,email])
@@ -52,7 +52,7 @@ def makeAccount(username,password,email): # DONE i think
 
 def create_website_save(url,index_path,timestamp, scraped_by_user): # DONE
     os.chdir("../../../")
-    con = sqlite3.connect("test.db")
+    con = sqlite3.connect("database.db")
     cursor = con.cursor()
     
     #gets user ID from username provided
@@ -70,7 +70,7 @@ def create_website_save(url,index_path,timestamp, scraped_by_user): # DONE
         return True
 
 def get_stats_by_username(username): # DONE
-    con = sqlite3.connect("test.db")
+    con = sqlite3.connect("database.db")
     cursor = con.cursor()
 
     # selects something im not too sure lol
@@ -103,7 +103,7 @@ def get_website_from_time(url,start_date,end_date): # DONE
         end_timestamp = time.mktime(datetime.datetime.strptime(end_date,"%Y-%m-%d").timetuple()) # start of today
     
     end_timestamp = end_timestamp + 86399 # 1 second before the day ends
-    con = sqlite3.connect("test.db")
+    con = sqlite3.connect("database.db")
     cursor = con.cursor()
     if url == "":
         result = cursor.execute("SELECT url,local_path FROM sites_data WHERE timestamp >= ? AND timestamp <= ?",[start_timestamp,end_timestamp]).fetchall()
@@ -115,7 +115,7 @@ def get_website_from_time(url,start_date,end_date): # DONE
 
 def update_stats(user,stat,amount): # DONE
     # bob | total_searches | 1
-    con = sqlite3.connect("test.db")
+    con = sqlite3.connect("database.db")
     cursor = con.cursor()
     data = cursor.execute("SELECT total_searches,total_saves FROM userdata JOIN stats ON (userdata.stat_id = stats.stat_id) WHERE username=?",[user]).fetchall()[0]
     
@@ -135,7 +135,7 @@ def generate_code():
     return code
 
 def add_vercode_2db(vcode,email): # DONE?
-    con = sqlite3.connect("test.db")
+    con = sqlite3.connect("database.db")
     cursor = con.cursor()
     try:
         result = cursor.execute("UPDATE userdata SET vercode=? WHERE email=?", [vcode,email])
@@ -146,7 +146,7 @@ def add_vercode_2db(vcode,email): # DONE?
     return True
 
 def check_vercode_validity(input_code, email): # DONE?
-    con = sqlite3.connect("test.db")
+    con = sqlite3.connect("database.db")
     cursor = con.cursor()
     stored_code = cursor.execute("SELECT vercode FROM userdata WHERE email=?", [email]).fetchall()[0][0]
     if int(input_code) == int(stored_code):
@@ -155,7 +155,7 @@ def check_vercode_validity(input_code, email): # DONE?
         return False
 
 def change_user_password(newpass,email): # DONE
-    con = sqlite3.connect("test.db")
+    con = sqlite3.connect("database.db")
     cursor = con.cursor()
     cursor.execute("UPDATE userdata SET phash=? WHERE email=?", [md5hash(newpass),email])    
     con.commit()
