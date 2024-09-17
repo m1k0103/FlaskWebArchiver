@@ -13,9 +13,9 @@ def md5hash(input):
 
 def checkUserExists(username): # unchanged
     #print(os.getcwd())
-    con = sqlite3.connect("user.db")
+    con = sqlite3.connect("test.db")
     cursor = con.cursor()    
-    result = cursor.execute("select * from userdata where username =?", (username,)).fetchall()
+    result = cursor.execute("SELECT * FROM userdata WHERE username =?",[username]).fetchall()
     try:
         if len(result) > 0:
             return True 
@@ -41,7 +41,7 @@ def makeAccount(username,password,email): # DONE i think
         return False
     else:
         phash = md5hash(password)
-        con = sqlite3.connect("user.db")
+        con = sqlite3.connect("test.db")
         cursor = con.cursor()
         cursor.execute("INSERT INTO stats(total_searches, total_saves) VALUES (0,0)")
         cursor.execute(f"INSERT INTO userdata(username,phash,email,vercode, stat_id) VALUES (?,?,?,NULL,{cursor.lastrowid})", [username,phash,email])
@@ -80,7 +80,7 @@ def get_stats_by_username(username): # DONE
 
     uid = cursor.execute("SELECT uid FROM userdata WHERE username=?", [username]).fetchall()[0][0]
     #joins sites and sites_data tables and gets website data where the uid matches the one yielded from the previous line
-    result = cursor.execute("SELECT sites_data.url, sites_data.timestamp, sites_data.local_path FROM sites JOIN sites_data ON (sites.site_id=sites_data.site_id) WHERE sites.scraped_by=?", [uid]).fetchall()
+    result = cursor.execute("SELECT sites_data.url, sites_data.timestamp FROM sites JOIN sites_data ON (sites.site_id=sites_data.site_id) WHERE sites.scraped_by=?", [uid]).fetchall()
     
     #converts tuples into lists so jinja2 can use it easier 
     scraped_sites = [list(tup) for tup in result]
@@ -105,9 +105,12 @@ def get_website_from_time(url,start_date,end_date): # DONE
     end_timestamp = end_timestamp + 86399 # 1 second before the day ends
     con = sqlite3.connect("test.db")
     cursor = con.cursor()
-    result = cursor.execute("SELECT url,local_path FROM sites_data WHERE url=? AND timestamp >= ? AND timestamp <= ?",[url, start_timestamp,end_timestamp]).fetchall() # returns list with tuples
-    websites = [list(tup) for tup in result] #converts everything to a list
+    if url == "":
+        result = cursor.execute("SELECT url,local_path FROM sites_data WHERE timestamp >= ? AND timestamp <= ?",[start_timestamp,end_timestamp]).fetchall()
+    else:
+        result = cursor.execute("SELECT url,local_path FROM sites_data WHERE url=? AND timestamp >= ? AND timestamp <= ?",[url, start_timestamp,end_timestamp]).fetchall() # returns list with tuples
     
+    websites = [list(tup) for tup in result] #converts everything to a list
     return websites # returns [[url, index_path], [url2, index_path2]]
 
 def update_stats(user,stat,amount): # DONE
