@@ -55,7 +55,6 @@ def create_website_save(url,index_path,timestamp, scraped_by_user): # DONE
     con = sqlite3.connect("test.db")
     cursor = con.cursor()
     
-    
     #gets user ID from username provided
     try:
         uid  = cursor.execute("SELECT uid FROM userdata WHERE username=?", [scraped_by_user]).fetchall()[0][0]
@@ -70,43 +69,46 @@ def create_website_save(url,index_path,timestamp, scraped_by_user): # DONE
         con.close()
         return True
 
-def get_stats_by_username(username): # ---------- STILL HAVE TO ADD THE STATS ON WHICH WEBSITES HAVE BEEN SCRAPED BY USER
+def get_stats_by_username(username): # DONE
     con = sqlite3.connect("test.db")
     cursor = con.cursor()
 
     # selects something im not too sure lol
-    result = cursor.execute("SELECT userdata.stat_id, stats.total_searches, stats.total_saves FROM userdata JOIN stats ON (userdata.stat_id=stats.site_id) WHERE userdata.username=?", [username]).fetchall()[0]
+    result = cursor.execute("SELECT userdata.stat_id, stats.total_searches, stats.total_saves FROM userdata JOIN stats ON (userdata.stat_id=stats.stat_id) WHERE userdata.username=?", [username]).fetchall()[0]
     total_searches = result[1]
     total_saves = result[2]
 
+    uid = cursor.execute("SELECT uid FROM userdata WHERE username=?", [username]).fetchall()[0][0]
+    #joins sites and sites_data tables and gets website data where the uid matches the one yielded from the previous line
+    result = cursor.execute("SELECT sites_data.url, sites_data.timestamp, sites_data.local_path FROM sites JOIN sites_data ON (sites.site_id=sites_data.site_id) WHERE sites.scraped_by=?", [uid]).fetchall()
+    
+    #converts tuples into lists so jinja2 can use it easier 
+    scraped_sites = [list(tup) for tup in result]
+
     con.close()
+    return total_searches, total_saves, scraped_sites
 
-    print(total_searches, total_saves)
-    return total_searches, total_saves
 
-def get_website_from_time(url,start_date,end_date): # rewrite
-
+def get_website_from_time(url,start_date,end_date): # DONE
     #if no start_date provided, it will just show the first ever timestamp
     if start_date == "":
         start_timestamp = 0
     else:
         start_timestamp = time.mktime(datetime.datetime.strptime(start_date,"%Y-%m-%d").timetuple())
-    
     # if no end_date is provided, it will assume you're searching from a date to the present day.
     if end_date == "": 
         end_timestamp = time.mktime(datetime.datetime.strptime(str(datetime.datetime.today()).split(" ")[0],'%Y-%m-%d').timetuple())
         print(end_timestamp)
     else:
-        end_timestamp = time.mktime(datetime.datetime.strptime(end_date,"%Y-%m-%d").timetuple()) # start of the day
+        end_timestamp = time.mktime(datetime.datetime.strptime(end_date,"%Y-%m-%d").timetuple()) # start of today
+    
     end_timestamp = end_timestamp + 86399 # 1 second before the day ends
-    con = sqlite3.connect("website_data.db")
+    con = sqlite3.connect("test.db")
     cursor = con.cursor()
-    result = cursor.execute("SELECT table_name FROM all_sites WHERE url=? AND timestamp >= ? AND timestamp <= ?", [url, start_timestamp, end_timestamp]).fetchall()
-    a = []
-    for table in result:
-        a.append(cursor.execute(f"SELECT url,index_path FROM {table[0]}").fetchall()[0])
-    con.close()
-    return list(a)
+    result = cursor.execute("SELECT url,local_path FROM sites_data WHERE url=? AND timestamp >= ? AND timestamp <= ?",[url, start_timestamp,end_timestamp]).fetchall() # returns list with tuples
+    websites = [list(tup) for tup in result] #converts everything to a list
+    
+    return websites # returns [[url, index_path], [url2, index_path2]]
 
 def update_stats(user,stat,amount): # rewrite
     # test | total_searches | 1
@@ -166,5 +168,6 @@ def change_user_password(newpass,email): # rewrite
 #update_stats("test","total_searches","1")
 #add_vercode_2db("013845","test@test.com")
 #print(generate_code())
-#get_website_from_time("https://google.com", "2024-09-02", "")
+get_website_from_time("https://google.com", "2024-09-16", "")
 #get_stats("test")
+#get_stats_by_username("bob")
