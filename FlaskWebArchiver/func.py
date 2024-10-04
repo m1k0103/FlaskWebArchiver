@@ -70,6 +70,9 @@ def create_website_save(url,index_path,timestamp, scraped_by_user): # DONE
         return True
 
 def get_stats_by_username(username): # DONE
+    print(os.listdir())
+    os.chdir("../../../")
+
     con = sqlite3.connect("database.db")
     cursor = con.cursor()
 
