@@ -2,6 +2,7 @@ import sqlite3
 import os
 import random
 import string
+import yaml
 
 # ----- TO DO -----
 #   > maybe make a config file to store the database names, admin password for the website, etc 
@@ -10,7 +11,9 @@ import string
 #   > work on the theory too
 
 def start():
-    MAIN_DB_NAME = "database.db"
+    with open('config.yaml', 'r') as cfg:
+        settings = yaml.safe_load(cfg)
+        MAIN_DB_NAME = settings["database_name"]
 
     if MAIN_DB_NAME not in os.listdir():
         # creates table for user data
@@ -58,11 +61,10 @@ def start():
 
     
     #creates secret_key used for auth
-    if "secret_key.py" not in os.listdir("./FlaskWebArchiver"):
-        with open("./FlaskWebArchiver/secret_key.py", "w") as f:
-            f.write(f"SECRET_KEY = b\"\"\"{''.join(random.choices(string.printable, k=16))}\"\"\"\nMAIL_ACCOUNT=\nMAIL_PASS=\n")
-    else:
-        pass
+    with open("config.yaml", "w+") as cfg:
+        settings = yaml.safe_load(cfg)
+        settings["SECRET_KEY"] = random.choices(string.ascii_letters, k=20)
+        yaml.dump(settings,cfg)
 
     # creates folder for website save data
     try:

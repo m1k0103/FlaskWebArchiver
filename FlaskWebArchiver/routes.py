@@ -1,10 +1,13 @@
 from flask import Flask, request, render_template, url_for, abort, redirect, session, render_template_string
-from FlaskWebArchiver.func import check_password, makeAccount, get_stats_by_username, get_website_from_time, update_stats, generate_code, add_vercode_2db, check_vercode_validity, change_user_password
+from FlaskWebArchiver.func import Errors, check_password, makeAccount, get_stats_by_username, get_website_from_time, update_stats, generate_code, add_vercode_2db, check_vercode_validity, change_user_password
 from FlaskWebArchiver.secret_key import SECRET_KEY, MAIL_ACCOUNT, MAIL_PASS
 from FlaskWebArchiver.scrape_website import scrape
 from flask_mail import Mail, Message
 
+#app.config
 app = Flask(__name__)
+app.secret_key = SECRET_KEY
+ERRORS = Errors(app)
 
 #mail config
 app.config["MAIL_SERVER"] = "smtp.office365.com"
@@ -15,7 +18,6 @@ app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USE_SSL"] = False
 mail = Mail(app)
 
-app.secret_key = SECRET_KEY
 
 RESET_PASSWORD_SUBJECT = "Hello, you have requested a password reset on the FlaskWebsiteArchiver.\n Please do not share if with anyone.\n\n Your code is: "
 
