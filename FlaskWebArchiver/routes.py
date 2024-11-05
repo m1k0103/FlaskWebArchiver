@@ -104,8 +104,8 @@ def forgotpassword():
 @app.route("/dashboard")
 def dashboard():
     if "logged_in" in session and session["logged_in"]:
-        username = session.get("username")
-        stats = get_stats_by_username(username)
+        session_username = session.get("username")
+        stats = get_stats_by_username(session_username)
         return render_template("dashboard.html", total_searches=stats[0], total_saves=stats[1], saved_sites=stats[2])
     else:
         return render_template("dashboard.html")
@@ -115,9 +115,9 @@ def dashboard():
 def archive(): 
     if request.method == "POST": # if authed archive
         if "logged_in" in session and session["logged_in"]:
-            url = request.form["archive"]
+            url_to_archive = request.form["archive"]
             update_stats(session["username"], "total_saves", 1)
-            return render_template("loading.html", urltoarchive=url)
+            return render_template("loading.html", urltoarchive=url_to_archive)
         else: # if not authed archive
             session["free_archives"] -= 1
             if session.get("free_archives") <= 0:
@@ -142,8 +142,8 @@ def timeline():
     if request.method == "GET":
         return render_template("timeline.html")
     elif request.method == "POST":
-        from_post = request.json["path_to_render"]
-        with open(from_post, "r") as f:
+        path_to_render = request.json["path_to_render"]
+        with open(path_to_render, "r") as f:
             content = f.read()
             return content
 
@@ -172,13 +172,13 @@ def loading():
     if request.method == "GET":
         return render_template("loading.html")
     elif request.method == "POST":
-        from_post = request.json["url"]
+        url_to_scrape = request.json["url"]
         if "logged_in" in session and session["logged_in"]:
-            url = scrape(from_post, session["username"])
+            url_local_path = scrape(url_to_scrape, session["username"])
         else: # else it will use a blank string
-            url = scrape(from_post, "")
+            url_local_path = scrape(url_to_scrape, "")
     
-        print(url)
-        with open(url, "r") as f:
+        print(url_local_path)
+        with open(url_local_path, "r") as f:
             content = f.read()
             return render_template_string(content)
