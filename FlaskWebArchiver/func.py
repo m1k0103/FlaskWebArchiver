@@ -13,10 +13,22 @@ class Errors:
     def __init__(self,app):
         app.register_error_handler(400,self.error400)
         app.register_error_handler(401,self.error401)
+        app.register_error_handler(403,self.error403)
+        app.register_error_handler(404,self.error404)
+        app.register_error_handler(405,self.error405)
+        app.register_error_handler(406,self.error406)
+        app.register_error_handler(408,self.error408)
+        app.register_error_handler(429,self.error429)
+        app.register_error_handler(500,self.error500)
+        app.register_error_handler(501,self.error501)
+        app.register_error_handler(502,self.error502)
+        app.register_error_handler(503,self.error503)
+        app.register_error_handler(504,self.error504)
+        app.register_error_handler(507,self.error507)
+        
 
     def error400(self,e):
         return 'Bad Request', 400
-    
     def error401(self,e):
         return 'Unauthorized', 401
     def error403(self,e):
