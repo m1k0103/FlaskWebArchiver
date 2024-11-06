@@ -11,7 +11,15 @@ import yaml
 #   > work on the theory too
 
 def start():
-    with open('config.yaml', 'r') as cfg:
+    
+    f = open("cfg.yml", "w")
+    f.write(f"""SECRET_KEY: '{"".join(random.choices(string.ascii_letters, k=20))}'
+database_name: 'database.db' # default: database.cfg
+MAIL_ACCOUNT: ''
+MAIN_PASS: ''""")
+    f.close()
+
+    with open('cfg.yml', 'r') as cfg:
         settings = yaml.safe_load(cfg)
         MAIN_DB_NAME = settings["database_name"]
 
@@ -60,12 +68,6 @@ def start():
         con.close()
 
     
-    #creates secret_key used for auth
-    with open("config.yaml", "w+") as cfg:
-        settings = yaml.safe_load(cfg)
-        settings["SECRET_KEY"] = random.choices(string.ascii_letters, k=20)
-        yaml.dump(settings,cfg)
-
     # creates folder for website save data
     try:
         os.mkdir("FlaskWebArchiver/website_saves")
