@@ -5,3 +5,4 @@ FlaskWebArchiver/__pycache__
 .venv
 FlaskWebArchiver/secret_key.py
 FlaskWebArchiver/website_saves
+cfg.yml
