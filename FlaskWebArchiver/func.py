@@ -29,12 +29,15 @@ def check_password(username,password): # DONE
     con = sqlite3.connect("database.db")
     cursor = con.cursor()
     phash = md5hash(password)
-    if str(phash) == cursor.execute("SELECT phash FROM userdata WHERE username=?", [username]).fetchall()[0][0]:
-        con.close()
-        return True
-    else:
-        con.close()
-        return False 
+    try:
+        if str(phash) == cursor.execute("SELECT phash FROM userdata WHERE username=?", [username]).fetchall()[0][0]:
+            con.close()
+            return True
+        else:
+            con.close()
+            return False
+    except:
+        return False
 
 def makeAccount(username,password,email): # DONE i think
     if checkUserExists(username=username) == True:
