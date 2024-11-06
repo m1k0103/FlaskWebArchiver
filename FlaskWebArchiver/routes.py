@@ -1,10 +1,13 @@
 from flask import Flask, request, render_template, url_for, abort, redirect, session, render_template_string
-from FlaskWebArchiver.func import check_password, makeAccount, get_stats_by_username, get_website_from_time, update_stats, generate_code, add_vercode_2db, check_vercode_validity, change_user_password
+from FlaskWebArchiver.func import Errors, check_password, makeAccount, get_stats_by_username, get_website_from_time, update_stats, generate_code, add_vercode_2db, check_vercode_validity, change_user_password
 from FlaskWebArchiver.secret_key import SECRET_KEY, MAIL_ACCOUNT, MAIL_PASS
 from FlaskWebArchiver.scrape_website import scrape
 from flask_mail import Mail, Message
 
+#app.config
 app = Flask(__name__)
+app.secret_key = SECRET_KEY
+ERRORS = Errors(app)
 
 #mail config
 app.config["MAIL_SERVER"] = "smtp.office365.com"
@@ -15,7 +18,6 @@ app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USE_SSL"] = False
 mail = Mail(app)
 
-app.secret_key = SECRET_KEY
 
 RESET_PASSWORD_SUBJECT = "Hello, you have requested a password reset on the FlaskWebsiteArchiver.\n Please do not share if with anyone.\n\n Your code is: "
 
@@ -102,8 +104,8 @@ def forgotpassword():
 @app.route("/dashboard")
 def dashboard():
     if "logged_in" in session and session["logged_in"]:
-        username = session.get("username")
-        stats = get_stats_by_username(username)
+        session_username = session.get("username")
+        stats = get_stats_by_username(session_username)
         return render_template("dashboard.html", total_searches=stats[0], total_saves=stats[1], saved_sites=stats[2])
     else:
         return render_template("dashboard.html")
@@ -113,9 +115,9 @@ def dashboard():
 def archive(): 
     if request.method == "POST": # if authed archive
         if "logged_in" in session and session["logged_in"]:
-            url = request.form["archive"]
+            url_to_archive = request.form["archive"]
             update_stats(session["username"], "total_saves", 1)
-            return render_template("loading.html", urltoarchive=url)
+            return render_template("loading.html", urltoarchive=url_to_archive)
         else: # if not authed archive
             session["free_archives"] -= 1
             if session.get("free_archives") <= 0:
@@ -140,8 +142,8 @@ def timeline():
     if request.method == "GET":
         return render_template("timeline.html")
     elif request.method == "POST":
-        from_post = request.json["path_to_render"]
-        with open(from_post, "r") as f:
+        path_to_render = request.json["path_to_render"]
+        with open(path_to_render, "r") as f:
             content = f.read()
             return content
 
@@ -170,13 +172,13 @@ def loading():
     if request.method == "GET":
         return render_template("loading.html")
     elif request.method == "POST":
-        from_post = request.json["url"]
-        try: # if user is logged in it will use session["username"]
-            url = scrape(from_post, session["username"])
-        except: # else it will use a blank string
-            url = scrape(from_post, "")
+        url_to_scrape = request.json["url"]
+        if "logged_in" in session and session["logged_in"]:
+            url_local_path = scrape(url_to_scrape, session["username"])
+        else: # else it will use a blank string
+            url_local_path = scrape(url_to_scrape, "")
     
-        print(url)
-        with open(url, "r") as f:
+        print(url_local_path)
+        with open(url_local_path, "r") as f:
             content = f.read()
             return render_template_string(content)

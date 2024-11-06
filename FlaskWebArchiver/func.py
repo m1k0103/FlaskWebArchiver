@@ -1,3 +1,4 @@
+#from werkzeug.exceptions import HTTPException, NotFound, BadRequest, Unauthorized, Forbidden, NotFound, MethodNotAllowed, NotAcceptable, RequestTimeout, InternalServerError, NotImplemented,ServiceUnavailable,GatewayTimeout
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -7,6 +8,54 @@ import random
 import datetime
 import time
 import string
+
+class Errors:
+    def __init__(self,app):
+        app.register_error_handler(400,self.error400)
+        app.register_error_handler(401,self.error401)
+        app.register_error_handler(403,self.error403)
+        app.register_error_handler(404,self.error404)
+        app.register_error_handler(405,self.error405)
+        app.register_error_handler(406,self.error406)
+        app.register_error_handler(408,self.error408)
+        app.register_error_handler(429,self.error429)
+        app.register_error_handler(500,self.error500)
+        app.register_error_handler(501,self.error501)
+        app.register_error_handler(502,self.error502)
+        app.register_error_handler(503,self.error503)
+        app.register_error_handler(504,self.error504)
+        app.register_error_handler(507,self.error507)
+        
+
+    def error400(self,e):
+        return 'Bad Request', 400
+    def error401(self,e):
+        return 'Unauthorized', 401
+    def error403(self,e):
+        return 'Forbidden', 403
+    def error404(self,e):
+        return 'Not Found', 404
+    def error405(self,e):
+        return 'Method Not Allowed', 405
+    def error406(self,e):
+        return 'Not acceptable', 406
+    def error408(self,e):
+        return 'Request Timeout', 408
+    def error429(self,e):
+        return 'Too Many Requests', 429
+    def error500(self,e):
+        return 'Internal Server Error', 500
+    def error501(self,e):
+        return 'Not Implemented', 501
+    def error502(self,e):
+        return 'Bad Gateway', 502
+    def error503(self,e):
+        return 'Service Unavailable', 503
+    def error504(self,e):
+        return 'Gateway Timeout', 504
+    def error507(self,e):
+        return 'Insufficient Storage', 507
+
 
 def md5hash(input):
     return hashlib.md5(input.encode()).hexdigest()
@@ -73,6 +122,9 @@ def create_website_save(url,index_path,timestamp, scraped_by_user): # DONE
         return True
 
 def get_stats_by_username(username): # DONE
+    print(os.listdir())
+    os.chdir("../../../")
+
     con = sqlite3.connect("database.db")
     cursor = con.cursor()
 
