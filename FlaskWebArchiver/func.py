@@ -1,6 +1,4 @@
 #from werkzeug.exceptions import HTTPException, NotFound, BadRequest, Unauthorized, Forbidden, NotFound, MethodNotAllowed, NotAcceptable, RequestTimeout, InternalServerError, NotImplemented,ServiceUnavailable,GatewayTimeout
-import requests
-from bs4 import BeautifulSoup
 import os
 import sqlite3
 import hashlib
@@ -24,7 +22,6 @@ class Errors:
         app.register_error_handler(502,self.error502)
         app.register_error_handler(503,self.error503)
         app.register_error_handler(504,self.error504)
-        app.register_error_handler(507,self.error507)
         
 
     def error400(self,e):
@@ -53,8 +50,6 @@ class Errors:
         return 'Service Unavailable', 503
     def error504(self,e):
         return 'Gateway Timeout', 504
-    def error507(self,e):
-        return 'Insufficient Storage', 507
 
 
 def md5hash(input):
